@@ -1,0 +1,48 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build files
+dist/
+build/
+.out/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDEs and editors
+# .vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+jest-test-results.json
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Miscellaneous
+*.tgz
+*.bak
+*.swp
+
+# Temporary files
+tmp/
+temp/
