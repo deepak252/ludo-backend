@@ -1,0 +1,30 @@
+# dependencies
+dev.js
+node_modules/
+node_modules/.bin/gp12-pem
+
+# testing
+/coverage
+
+# production
+/build
+/dist
+
+.vscodeexit
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+test.js
+
+backup/
+temp/
