@@ -1,0 +1,7 @@
+
+
+NOTE: 
+When using Node.js 20 and ESM, you cannot use ts-node-esm anymore (it will show you ERR_UNKNOWN_FILE_EXTENSION). You have to use:
+"exec": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts"
+"exec": "node --loader ts-node/esm src/index.ts"
+(https://www.youtube.com/watch?v=jn370WEIvjs)
