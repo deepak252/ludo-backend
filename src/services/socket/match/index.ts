@@ -4,7 +4,6 @@ import logger from '@/utils/logger.js'
 import { generateUID } from '@/utils/uuidHelper.js'
 import { ApiResponse } from '@/utils/ApiResponse.js'
 // import { matchHandler } from './match.handler.js'
-
 export const connectMatch = (io: Server) => {
   const matchNamespace = io.of('/match')
 

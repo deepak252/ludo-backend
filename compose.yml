@@ -1,4 +1,8 @@
 services:
+  redis:
+    image: redis:7.4.0
+    ports:
+      - '6379:6379'
   app:
     build: .
     ports:
@@ -6,3 +10,5 @@ services:
     volumes:
       - .:/app # Changes in the host directory immediately visible inside the container.
       - /app/node_modules # Avoid overriding node_modules
+    depends_on:
+      - redis
