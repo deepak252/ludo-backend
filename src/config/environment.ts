@@ -4,6 +4,7 @@ dotenv.config()
 export const {
   NODE_ENV,
   SERVER_PORT = 5000,
+  COOKIE_SECRET = 'SECRET',
   MONGO_URI,
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,

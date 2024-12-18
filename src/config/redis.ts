@@ -1,8 +1,20 @@
 import { Redis } from 'ioredis'
+import { RedisStore } from 'connect-redis'
 
 const redis = new Redis({
   host: 'redis', // Docker service name
   port: 6379
+})
+
+const pubClient = new Redis({
+  host: 'redis', // Docker service name
+  port: 6379
+})
+const subClient = pubClient.duplicate()
+
+const redisStore = new RedisStore({
+  client: redis,
+  prefix: 'myapp:'
 })
 
 redis.on('connect', () => {
@@ -17,4 +29,4 @@ redis.on('close', () => {
   console.error('Redis connection closed')
 })
 
-export { redis }
+export { redis, pubClient, subClient, redisStore }
