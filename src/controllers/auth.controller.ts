@@ -26,3 +26,13 @@ export const signOut = async (req: any, res: any) => {
   // })
   return res.json(new ApiResponse('Sign out successful', undefined, 201))
 }
+
+export const getUserProfile = async (req: any, res: any) => {
+  return res.json(
+    new ApiResponse(
+      'Profile fetched successfully',
+      { session: req.session.user },
+      201
+    )
+  )
+}

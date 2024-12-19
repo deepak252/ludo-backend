@@ -1,21 +1,35 @@
 import { Server } from 'socket.io'
+import sharedSession from 'express-socket.io-session'
 import { MATCH_EVENTS } from './match.event.js'
 import logger from '@/utils/logger.js'
 import { generateUID } from '@/utils/uuidHelper.js'
 import { ApiResponse } from '@/utils/ApiResponse.js'
+import { sessionMiddleware } from '@/middlewares/sessionMiddleware.js'
+
+// // Wrapper to make session middleware work with Socket.IO
+// const wrap = (middleware: any) => (socket: any, next: any) => {
+//   middleware(socket.request, {}, next)
+// }
 
 export const connectMatch = (io: Server) => {
   const matchNamespace = io.of('/match')
 
-  matchNamespace.use((socket, next) => {
-    logger.info(`Player session: `, socket.request)
-    // console.log('Handshake headers:', socket.handshake.headers.cookie)
-    next()
-  })
+  // matchNamespace.use((socket, next) => {
+  //   logger.info(`Player session: `, socket.handshake.headers)
+  //   // console.log('Handshake headers:', socket.handshake.headers.cookie)
+  //   next()
+  // })
+
+  matchNamespace.use(
+    sharedSession(sessionMiddleware, {
+      autoSave: true
+    })
+  )
 
   matchNamespace.on('connection', (socket) => {
     logger.info(`Player connected: ${socket.id}`)
     logger.info(`Player session: `, socket.request)
+    logger.info(`Player session: `, socket.request?.session)
 
     // const isRoomJoined = () => {
     //   const joinedRoomCount =
@@ -78,6 +92,10 @@ export const connectMatch = (io: Server) => {
     })
 
     socket.on('disconnect', () => {
+      logger.info(`Player disconnected: ${socket.id}`)
+    })
+
+    socket.on('error', () => {
       logger.info(`Player disconnected: ${socket.id}`)
     })
   })
