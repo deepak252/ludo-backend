@@ -1,18 +1,13 @@
 import { Server } from 'socket.io'
-import sharedSession from 'express-socket.io-session'
 import { MATCH_EVENTS } from './match.event.js'
 import logger from '@/utils/logger.js'
 import { generateUID } from '@/utils/uuidHelper.js'
 import { ApiResponse } from '@/utils/ApiResponse.js'
-import { sessionMiddleware } from '@/middlewares/sessionMiddleware.js'
-
-// // Wrapper to make session middleware work with Socket.IO
-// const wrap = (middleware: any) => (socket: any, next: any) => {
-//   middleware(socket.request, {}, next)
-// }
 
 export const connectMatch = (io: Server) => {
   const matchNamespace = io.of('/match')
+
+  // matchNamespace.use(wrap(sessionMiddleware))
 
   // matchNamespace.use((socket, next) => {
   //   logger.info(`Player session: `, socket.handshake.headers)
@@ -20,16 +15,19 @@ export const connectMatch = (io: Server) => {
   //   next()
   // })
 
-  matchNamespace.use(
-    sharedSession(sessionMiddleware, {
-      autoSave: true
-    })
-  )
+  // matchNamespace.use((socket, next) => {
+  //   // Wrap in a custom middleware to access session
+  //   sessionMiddleware(socket.request, {}, () => {
+  //     // Now socket.request.session should be available
+  //     console.log('Admin namespace session:', socket.request.session)
+  //     next()
+  //   })
+  // })
 
   matchNamespace.on('connection', (socket) => {
     logger.info(`Player connected: ${socket.id}`)
-    logger.info(`Player session: `, socket.request)
-    logger.info(`Player session: `, socket.request?.session)
+    // logger.info(`Player session: `, socket.request)
+    // logger.info(`Player session: `, socket)
 
     // const isRoomJoined = () => {
     //   const joinedRoomCount =
