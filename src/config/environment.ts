@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const {
-  NODE_ENV,
+  NODE_ENV = 'development',
   SERVER_PORT = 5000,
   COOKIE_SECRET = 'SECRET',
   MONGO_URI,

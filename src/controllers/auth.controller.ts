@@ -1,38 +1,32 @@
-import { ApiResponse } from '@/utils/ApiResponse.js'
+import { UserService } from '@/services/user.service.js'
+import { ApiError } from '@/utils/ApiError.js'
+import { ResponseSuccess } from '@/utils/ApiResponse.js'
+import { asyncHandler } from '@/utils/asyncHandler.js'
 
-export const signUp = async (req: any, res: any) => {
-  req.session.user = { email: 'user@gmail.com' }
-  return res.json(new ApiResponse('Sign up successful', undefined, 201))
-}
+export const signUp = asyncHandler(async (req, _) => {
+  const { username } = req.body
+  if (!username) {
+    throw new ApiError('Username is required')
+  }
+  const user = await UserService.createUser(username)
+  req.session.user = user
+  return new ResponseSuccess('Sign up successful', user, 201)
+})
 
-export const signIn = async (req: any, res: any) => {
-  req.session.user = { email: 'user@gmail.com' }
-  return res.json(new ApiResponse('Sign in successful', undefined, 201))
-}
+export const signIn = asyncHandler(async (req, _) => {
+  const { username } = req.body
+  if (!username) {
+    throw new ApiError('Username is required')
+  }
+  const user = await UserService.getUser(username)
+  if (!user) {
+    throw new ApiError('User not found')
+  }
+  req.session.user = { username }
+  return new ResponseSuccess('Sign in successful', user, 201)
+})
 
-export const signOut = async (req: any, res: any) => {
+export const signOut = asyncHandler(async (req: any, _: any) => {
   req.session.user = null
-  // req.session.save(function (err: any) {
-  //   if (err) {
-  //     return res.json(new Ap('Sign out successful', undefined, 201))
-  //   }
-
-  //   // regenerate the session, which is good practice to help
-  //   // guard against forms of session fixation
-  //   req.session.regenerate(function (err) {
-  //     if (err) next(err)
-  //     res.redirect('/')
-  //   })
-  // })
-  return res.json(new ApiResponse('Sign out successful', undefined, 201))
-}
-
-export const getUserProfile = async (req: any, res: any) => {
-  return res.json(
-    new ApiResponse(
-      'Profile fetched successfully',
-      { session: req.session.user },
-      201
-    )
-  )
-}
+  return new ResponseSuccess('Sign out successful', undefined, 201)
+})

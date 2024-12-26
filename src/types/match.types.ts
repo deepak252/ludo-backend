@@ -26,7 +26,8 @@ export type KilledToken = {
 export type Player = {
   userId?: string | null
   tokens: TokenInfo[]
-  isActive: boolean
+  isJoined: boolean
+  isOnline: boolean
 }
 
 export type MatchState = {
@@ -36,5 +37,6 @@ export type MatchState = {
   players: Record<PlayerType, Player>
   turn: PlayerType
   diceValue: number
+  createdBy: string
   ludoState?: LudoState
 }

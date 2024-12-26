@@ -11,3 +11,10 @@ export enum LudoState {
   pickToken = 'PickToken',
   tokenMoving = 'Moving'
 }
+
+export enum PlayerType {
+  throwDice = 'ThrowDice',
+  diceRolling = 'DiceRolling',
+  pickToken = 'PickToken',
+  tokenMoving = 'Moving'
+}

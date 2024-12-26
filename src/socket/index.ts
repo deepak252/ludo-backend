@@ -1,8 +1,8 @@
 import { Server } from 'socket.io'
 import { createAdapter } from '@socket.io/redis-adapter'
 import { pubClient, subClient } from '@/config/redis.js'
-import { sessionMiddleware } from '@/middlewares/sessionMiddleware.js'
 import { connectUser } from './connectUser.js'
+import { sessionMiddleware } from '@/middlewares/session.middleware.js'
 
 export const setupSocket = (httpServer: any) => {
   const io = new Server(httpServer, {
