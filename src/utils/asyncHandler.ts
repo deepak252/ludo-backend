@@ -10,6 +10,8 @@ export const asyncHandler = (
       .then((result) => {
         if (result instanceof ApiResponse) {
           return res.status(result.code).json(result)
+        } else {
+          return res.json(result)
         }
       })
       .catch(next)

@@ -22,7 +22,8 @@ export const signIn = asyncHandler(async (req, _) => {
   if (!user) {
     throw new ApiError('User not found')
   }
-  req.session.user = { username }
+  req.session.user = user
+
   return new ResponseSuccess('Sign in successful', user, 201)
 })
 
