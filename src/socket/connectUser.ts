@@ -5,15 +5,13 @@ export const connectUser = (io: Server) => {
   const rootNamespace = io.of('/')
 
   io.use((socket, next) => {
-    socket.user = {}
-    const userId = socket.handshake.headers?.userid as string
-    const email = socket.handshake.headers?.email as string
-    if (!userId) {
+    // socket.user = {}
+    const username = socket.handshake.headers?.username as string
+    if (!username) {
       next(new Error('Invalid user'))
     } else {
       socket.user = {
-        userId,
-        email
+        username
       }
       next()
     }
@@ -22,8 +20,8 @@ export const connectUser = (io: Server) => {
   })
 
   io.on('connection', (socket) => {
-    const { userId = '', email } = socket.user
-    console.log(`User connected: ${userId}, ${email}, ${socket.id}`)
+    const { username } = socket.user ?? {}
+    console.log(`User connected: ${username}, ${socket.id}`)
     // console.log('Rooms', rootNamespace.adapter.rooms)
 
     handleRoom(socket)

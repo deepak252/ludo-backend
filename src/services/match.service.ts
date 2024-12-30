@@ -2,7 +2,6 @@ import { redisClient } from '@/config/redis.js'
 import { LudoState, MatchStatus } from '@/enums/match.enum.js'
 import { MatchState, PlayerType } from '@/types/match.types.js'
 import { createNewMatch } from '@/utils/matchUtil.js'
-import { generateUID } from '@/utils/uuidHelper.js'
 
 export class MatchService {
   static async checkRoomExists(roomId: string) {
@@ -10,8 +9,6 @@ export class MatchService {
   }
 
   static async getUserRoom(username: string) {
-    console.log(`user:${username}`)
-
     return await redisClient.hget(`user:${username}`, 'room')
   }
 
@@ -54,40 +51,53 @@ export class MatchService {
     await redisClient.del(`room:${match.roomId}`)
   }
 
-  static async addUserToRoom(
-    userId: string,
-    roomId?: string,
-    playerCount?: number = 4
-  ) {
-    if (!roomId) {
-      const roomId = generateUID()
-      const match = createNewMatch(playerCount, roomId, userId)
-      await this.setRoom(match)
-      await this.setUserRoom(userId, roomId)
-      return match
-    } else {
-      const match = await this.getRoom(roomId)
-      if (!match) {
-        throw new Error('Room does not exists')
-      }
-      if (match.status !== MatchStatus.NotStarted) {
-        throw new Error('Unable to join room')
-      }
-      // match.
+  static async joinRoom(username: string, roomId: string) {
+    const match = await this.getRoom(roomId)
+    if (!match) {
+      throw new Error('Room does not exists')
     }
-    // if (await this.checkRoomExists(roomId)) {
-    //   // const users = await redisClient.hget(`room:${roomId}`)
-    //   const match = await redisClient.get(`room:${roomId}`)
-    // } else {
-    //   const newMatch = createNewMatch(4, roomId, userId)
-    //   await redisClient.hset(`room:${roomId}`, {
-    //     ...newMatch,
-    //     players: JSON.stringify(newMatch.players)
-    //   })
-    //   await this.setUserRoom(userId, roomId)
-    //   return newMatch
-    // }
+    if (
+      match.status === MatchStatus.Completed ||
+      match.status === MatchStatus.Cancelled
+    ) {
+      throw new Error('Unable to join room')
+    }
   }
+
+  // static async addUserToRoom(
+  //   userId: string,
+  //   roomId?: string,
+  //   playerCount: number = 4
+  // ) {
+  //   if (!roomId) {
+  //     const roomId = generateUID()
+  //     const match = createNewMatch(playerCount, roomId, userId)
+  //     await this.setRoom(match)
+  //     await this.setUserRoom(userId, roomId)
+  //     return match
+  //   } else {
+  //     const match = await this.getRoom(roomId)
+  //     if (!match) {
+  //       throw new Error('Room does not exists')
+  //     }
+  //     if (match.status !== MatchStatus.NotStarted) {
+  //       throw new Error('Unable to join room')
+  //     }
+  //     // match.
+  //   }
+  //   // if (await this.checkRoomExists(roomId)) {
+  //   //   // const users = await redisClient.hget(`room:${roomId}`)
+  //   //   const match = await redisClient.get(`room:${roomId}`)
+  //   // } else {
+  //   //   const newMatch = createNewMatch(4, roomId, userId)
+  //   //   await redisClient.hset(`room:${roomId}`, {
+  //   //     ...newMatch,
+  //   //     players: JSON.stringify(newMatch.players)
+  //   //   })
+  //   //   await this.setUserRoom(userId, roomId)
+  //   //   return newMatch
+  //   // }
+  // }
 }
 
 // export class MatchService {

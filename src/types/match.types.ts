@@ -24,7 +24,7 @@ export type KilledToken = {
 }
 
 export type Player = {
-  userId?: string | null
+  username?: string | null
   tokens: TokenInfo[]
   isJoined: boolean
   isOnline: boolean
