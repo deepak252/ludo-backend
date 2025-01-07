@@ -1,6 +1,6 @@
 import session from 'express-session'
-import { COOKIE_SECRET, NODE_ENV } from '@/config/environment.js'
-import { redisStore } from '@/config/redis.js'
+import { COOKIE_SECRET, NODE_ENV } from '../config/environment.js'
+import { redisStore } from '../config/redis.js'
 
 export const sessionMiddleware = session({
   secret: COOKIE_SECRET,

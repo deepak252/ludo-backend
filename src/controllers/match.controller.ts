@@ -1,10 +1,10 @@
-// import { MatchService } from '@/services/match.service.js'
-import { LudoState, MatchStatus } from '@/enums/match.enum.js'
-import { MatchService } from '@/services/match.service.js'
-import { ApiError } from '@/utils/ApiError.js'
-import { ApiResponse } from '@/utils/ApiResponse.js'
-import { asyncHandler } from '@/utils/asyncHandler.js'
-import { generateUID } from '@/utils/uuidHelper.js'
+// import { MatchService } from '../services/match.service.js'
+import { LudoState, MatchStatus } from '../enums/match.enum.js'
+import { MatchService } from '../services/match.service.js'
+import { ApiError } from '../utils/ApiError.js'
+import { ApiResponse } from '../utils/ApiResponse.js'
+import { asyncHandler } from '../utils/asyncHandler.js'
+import { generateUID } from '../utils/uuidHelper.js'
 
 export const createMatch = asyncHandler(async (req, _) => {
   const { maxPlayers } = req.body

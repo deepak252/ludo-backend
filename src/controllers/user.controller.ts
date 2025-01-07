@@ -1,5 +1,5 @@
-import { ResponseSuccess } from '@/utils/ApiResponse.js'
-import { asyncHandler } from '@/utils/asyncHandler.js'
+import { ResponseSuccess } from '../utils/ApiResponse.js'
+import { asyncHandler } from '../utils/asyncHandler.js'
 
 export const getUserProfile = asyncHandler(async (req, _) => {
   return new ResponseSuccess(

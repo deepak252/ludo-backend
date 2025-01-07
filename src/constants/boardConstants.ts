@@ -1,4 +1,4 @@
-import { PlayerType, Position } from '@/types/match.types.js'
+import { PlayerType, Position } from '../types/match.types.js'
 
 export default class BoardConstants {
   static readonly ANIMATION_DELAY = 200

@@ -1,7 +1,7 @@
-import { UserService } from '@/services/user.service.js'
-import { ApiError } from '@/utils/ApiError.js'
-import { ResponseSuccess } from '@/utils/ApiResponse.js'
-import { asyncHandler } from '@/utils/asyncHandler.js'
+import { UserService } from '../services/user.service.js'
+import { ApiError } from '../utils/ApiError.js'
+import { ResponseSuccess } from '../utils/ApiResponse.js'
+import { asyncHandler } from '../utils/asyncHandler.js'
 
 export const signUp = asyncHandler(async (req, _) => {
   const { username } = req.body

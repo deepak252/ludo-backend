@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
-import { UserService } from '@/services/user.service.js'
-import { ApiError } from '@/utils/ApiError.js'
+import { UserService } from '../services/user.service.js'
+import { ApiError } from '../utils/ApiError.js'
 
 export const verifyUer = async (
   req: Request,

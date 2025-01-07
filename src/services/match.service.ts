@@ -1,7 +1,7 @@
-import { redisClient } from '@/config/redis.js'
-import { LudoState, MatchStatus } from '@/enums/match.enum.js'
-import { MatchState, PlayerType } from '@/types/match.types.js'
-import { createNewMatch } from '@/utils/matchUtil.js'
+import { redisClient } from '../config/redis.js'
+import { LudoState, MatchStatus } from '../enums/match.enum.js'
+import { MatchState, PlayerType } from '../types/match.types.js'
+// import { createNewMatch } from '../utils/matchUtil.js'
 
 export class MatchService {
   static async checkRoomExists(roomId: string) {

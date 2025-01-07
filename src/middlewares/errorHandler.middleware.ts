@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { ApiError } from '../utils/ApiError.js'
-import { NODE_ENV } from '@/config/environment.js'
-import { ResponseFailure } from '@/utils/ApiResponse.js'
+import { NODE_ENV } from '../config/environment.js'
+import { ResponseFailure } from '../utils/ApiResponse.js'
 
 export const errorHandler = (
   err: ApiError | Error,

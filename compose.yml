@@ -7,6 +7,7 @@ services:
     build: .
     ports:
       - 5000:5000
+      - 9229:9229
     volumes:
       - .:/app # Changes in the host directory immediately visible inside the container.
       - /app/node_modules # Avoid overriding node_modules

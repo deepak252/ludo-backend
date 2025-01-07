@@ -1,4 +1,4 @@
-import { PlayerType } from '@/types/match.types.js'
+import { PlayerType } from '../types/match.types.js'
 
 export const PlayerTypes: PlayerType[] = ['green', 'yellow', 'blue', 'red']
 
