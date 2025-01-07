@@ -1,9 +1,9 @@
 import express from 'express'
 import cors from 'cors'
-import { ApiResponse } from '@/utils/ApiResponse.js'
 import router from './routes/index.js'
 import { sessionMiddleware } from './middlewares/session.middleware.js'
-import { errorHandler } from './middlewares/errorHandler.middleware.js'
+import { ApiResponse } from 'utils/ApiResponse.js'
+import { errorHandler } from 'middlewares/errorHandler.middleware.js'
 
 const app = express()
 

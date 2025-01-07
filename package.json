@@ -10,7 +10,8 @@
     "build": "tsc",
     "format": "prettier --write .",
     "lint": "eslint . ",
-    "lint:fix": "eslint . --fix "
+    "lint:fix": "eslint . --fix ",
+    "watch": "tsc -p tsconfig.dev.json -watch | node --inspect=0.0.0.0:9229 dist/index.js"
   },
   "author": "",
   "license": "ISC",

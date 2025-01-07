@@ -1,7 +1,7 @@
 import { createServer } from 'http'
 import app from './app.js'
-import { SERVER_PORT } from '@/config/environment.js'
 import { setupSocket } from './socket/index.js'
+import { SERVER_PORT } from 'config/environment.js'
 
 const httpServer = createServer(app)
 // const io = new Server(httpServer, {

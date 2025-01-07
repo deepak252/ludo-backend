@@ -1,6 +1,6 @@
-import BoardConstants from '@/constants/boardConstants.js'
-import { LudoState, MatchStatus } from '@/enums/match.enum.js'
-import { MatchState, PlayerType } from '@/types/match.types.js'
+import BoardConstants from 'constants/boardConstants.js'
+import { LudoState, MatchStatus } from 'enums/match.enum.js'
+import { MatchState, PlayerType } from 'types/match.types.js'
 
 export const createNewMatch = (
   playerCount: number,
