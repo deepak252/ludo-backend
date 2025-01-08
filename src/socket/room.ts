@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io'
 import { ROOM_EVENT } from './socket.event.js'
 import { ResponseFailure, ResponseSuccess } from '../utils/ApiResponse.js'
-import { MatchService } from '../services/match.service.js'
+import { RoomService } from '../services/room.service.js'
 
 export const handleRoom = (socket: Socket) => {
   const { username = '' } = socket.user ?? {}
@@ -26,11 +26,11 @@ export const handleRoom = (socket: Socket) => {
       if (!roomId) {
         throw new Error('RoomId is required')
       }
-      const currRoom = await MatchService.getUserRoom(username)
+      const currRoom = await RoomService.getUserRoom(username)
       if (currRoom) {
         throw new Error(`Already in a room: ${currRoom}`)
       }
-      await MatchService.joinRoom(roomId, username)
+      await RoomService.joinRoom(roomId, username)
       socket.join(roomId)
       callback?.(new ResponseSuccess('success', { roomId }))
     } catch (e: any) {
