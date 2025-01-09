@@ -21,4 +21,16 @@ export class UserService {
     await redisClient.hset(`user:${username}`, { username })
     return { username }
   }
+
+  static async getUserSocketId(username: string) {
+    return await redisClient.hget(`user:${username}`, 'socketId')
+  }
+
+  static async setUserSocketId(username: string, socketId: string) {
+    await redisClient.hset(`user:${username}`, 'socketId', socketId)
+  }
+
+  static async removeUserSocketId(username?: string) {
+    await redisClient.hdel(`user:${username}`, 'socketId')
+  }
 }

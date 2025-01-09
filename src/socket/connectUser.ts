@@ -1,10 +1,11 @@
 import { Server } from 'socket.io'
 import { handleRoom } from './room.js'
+import { UserService } from '../services/user.service.js'
 
 export const connectUser = (io: Server) => {
   const rootNamespace = io.of('/')
 
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     // socket.user = {}
     const username = socket.handshake.headers?.username as string
     if (!username) {
@@ -13,6 +14,7 @@ export const connectUser = (io: Server) => {
       socket.user = {
         username
       }
+      await UserService.setUserSocketId(username, socket.id)
       next()
     }
     // console.log(socket.handshake.headers)
@@ -30,8 +32,9 @@ export const connectUser = (io: Server) => {
     //   logger.info(`room ${room} was created`)
     // })
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       console.log(`User disconnected: ${socket.id}`)
+      await UserService.removeUserSocketId(socket.user?.username)
     })
 
     socket.on('error', () => {

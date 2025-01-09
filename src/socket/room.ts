@@ -27,12 +27,12 @@ export const handleRoom = (socket: Socket) => {
         throw new Error('RoomId is required')
       }
       const currRoom = await RoomService.getUserRoom(username)
-      if (currRoom && currRoom.status) {
+      if (currRoom) {
         throw new Error(`Already in a room: ${currRoom?.roomId}`)
       }
-      await RoomService.joinRoom(username, roomId)
-      socket.join(roomId)
-      callback?.(new ResponseSuccess('success', { roomId }))
+      const room = await RoomService.joinRoom(username, roomId)
+      await socket.join(roomId)
+      callback?.(new ResponseSuccess('Room joined successfully', { room }))
     } catch (e: any) {
       console.error('Error: JoinRoom', e)
       return callback?.(new ResponseFailure(e.message))

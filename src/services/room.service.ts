@@ -1,5 +1,5 @@
 import { redisClient } from '../config/redis.js'
-import { PlayerTypes } from '../constants/index.js'
+import { PLAYER_TYPES } from '../constants/index.js'
 import { LudoState, MatchStatus } from '../enums/match.enum.js'
 import { MatchState, PlayerType } from '../types/match.types.js'
 
@@ -40,13 +40,18 @@ export class RoomService {
     }
   }
 
-  static async setRoom(room: MatchState): Promise<MatchState> {
+  static async setRoom(
+    room: MatchState,
+    username?: string
+  ): Promise<MatchState> {
     const pipeline = redisClient.pipeline()
     pipeline.hset(`room:${room.roomId}`, {
       ...room,
       players: JSON.stringify(room.players)
     })
-    pipeline.hset(`user:${room.players.green.username}`, 'room', room.roomId)
+    if (username) {
+      pipeline.hset(`user:${username}`, 'room', room.roomId)
+    }
     try {
       await pipeline.exec()
     } catch (error) {
@@ -59,7 +64,7 @@ export class RoomService {
   static async deleteRoom(room: MatchState) {
     const pipeline = redisClient.pipeline()
     pipeline.del(`room:${room.roomId}`)
-    for (const player of PlayerTypes) {
+    for (const player of PLAYER_TYPES) {
       if (room.players?.[player]?.username) {
         pipeline.hdel(`user:${room.players?.[player].username}`, 'room')
       }
@@ -73,15 +78,46 @@ export class RoomService {
   }
 
   static async joinRoom(username: string, roomId: string) {
-    const rooom = await this.getRoom(roomId)
-    if (!rooom) {
+    const room = await this.getRoom(roomId)
+    if (!room) {
       throw new Error('Room does not exists')
     }
     if (
-      rooom.status === MatchStatus.Completed ||
-      rooom.status === MatchStatus.Cancelled
+      room.status === MatchStatus.Completed ||
+      room.status === MatchStatus.Cancelled
     ) {
       throw new Error('Unable to join room')
+    }
+    let isJoined = false
+    let joinedPlayersCount = 0
+    for (const player of PLAYER_TYPES) {
+      // If user is already present in this room, set isPlaying
+      if (room.players[player].username === username) {
+        room.players[player].isPlaying = true
+        isJoined = true
+      }
+      if (room.players[player].username) {
+        joinedPlayersCount++
+      }
+    }
+
+    if (!isJoined) {
+      if (joinedPlayersCount >= room.maxPlayers) {
+        throw new Error('Room is fully occupied')
+      }
+      for (const player of PLAYER_TYPES) {
+        // Add user to room
+        if (!room.players[player].username) {
+          room.players[player].username = username
+          room.players[player].isPlaying = true
+          isJoined = true
+        }
+      }
+    }
+
+    if (isJoined) {
+      await this.setRoom(room, username)
+      return room
     }
   }
 

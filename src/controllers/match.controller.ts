@@ -25,10 +25,10 @@ export const createMatch = asyncHandler(async (req, _) => {
     createdBy: username,
     diceValue: 0,
     players: {
-      green: { username, tokens: [], isJoined: false, isOnline: false },
-      yellow: { tokens: [], isJoined: false, isOnline: false },
-      blue: { tokens: [], isJoined: false, isOnline: false },
-      red: { tokens: [], isJoined: false, isOnline: false }
+      green: { username, tokens: [], isPlaying: false },
+      yellow: { tokens: [], isPlaying: false },
+      blue: { tokens: [], isPlaying: false },
+      red: { tokens: [], isPlaying: false }
     },
     status: MatchStatus.NotStarted,
     turn: 'green',
