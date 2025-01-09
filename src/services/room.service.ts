@@ -9,7 +9,10 @@ export class RoomService {
   }
 
   static async getUserRoom(username: string) {
-    return await redisClient.hget(`user:${username}`, 'room')
+    const roomId = await redisClient.hget(`user:${username}`, 'room')
+    if (roomId) {
+      return await this.getRoom(roomId)
+    }
   }
 
   // static async setUserRoom(username: string, roomId: string) {

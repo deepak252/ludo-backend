@@ -1,4 +1,4 @@
-import { LudoState, MatchStatus } from '@/enums/match.enum.js'
+import { LudoState, MatchStatus } from '../enums/match.enum.js'
 
 export type Position = [number, number]
 export type LudoColor = 'green' | 'yellow' | 'blue' | 'red'
