@@ -30,7 +30,8 @@ export class RoomService {
     }
     return {
       roomId: res.roomId,
-      maxPlayers: Number(res.maxPlayers),
+      maxPlayersCount: Number(res.maxPlayersCount),
+      joinedPlayersCount: Number(res.joinedPlayersCount),
       createdBy: res.createdBy,
       status: res.status as MatchStatus,
       players: JSON.parse(res.players),
@@ -89,20 +90,16 @@ export class RoomService {
       throw new Error('Unable to join room')
     }
     let isJoined = false
-    let joinedPlayersCount = 0
     for (const player of PLAYER_TYPES) {
       // If user is already present in this room, set isPlaying
       if (room.players[player].username === username) {
         room.players[player].isPlaying = true
         isJoined = true
       }
-      if (room.players[player].username) {
-        joinedPlayersCount++
-      }
     }
 
     if (!isJoined) {
-      if (joinedPlayersCount >= room.maxPlayers) {
+      if (room.joinedPlayersCount >= room.maxPlayersCount) {
         throw new Error('Room is fully occupied')
       }
       for (const player of PLAYER_TYPES) {
@@ -110,7 +107,9 @@ export class RoomService {
         if (!room.players[player].username) {
           room.players[player].username = username
           room.players[player].isPlaying = true
+          room.joinedPlayersCount++
           isJoined = true
+          break
         }
       }
     }

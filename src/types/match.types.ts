@@ -31,7 +31,8 @@ export type Player = {
 
 export type MatchState = {
   roomId: string
-  maxPlayers: number
+  maxPlayersCount: number
+  joinedPlayersCount: number
   status: MatchStatus
   players: Record<PlayerType, Player>
   turn: PlayerType

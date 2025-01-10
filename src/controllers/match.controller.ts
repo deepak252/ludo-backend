@@ -6,9 +6,9 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 import { generateUID } from '../utils/uuidHelper.js'
 
 export const createMatch = asyncHandler(async (req, _) => {
-  const { maxPlayers } = req.body
-  if (isNaN(maxPlayers) || maxPlayers > 4 || maxPlayers < 2) {
-    throw new ApiError(`Invalid maxPlayers value - ${maxPlayers}`)
+  const { maxPlayersCount } = req.body
+  if (isNaN(maxPlayersCount) || maxPlayersCount > 4 || maxPlayersCount < 2) {
+    throw new ApiError(`Invalid maxPlayers value - ${maxPlayersCount}`)
   }
   const username = req.session.user?.username ?? ''
 
@@ -21,7 +21,8 @@ export const createMatch = asyncHandler(async (req, _) => {
   /// TODO: Create room in the database
   await RoomService.setRoom({
     roomId,
-    maxPlayers,
+    maxPlayersCount,
+    joinedPlayersCount: 1,
     createdBy: username,
     diceValue: 0,
     players: {
