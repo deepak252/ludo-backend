@@ -23,56 +23,25 @@ export const handleRoom = (socket: Socket) => {
       return callback?.(new ResponseFailure(e.message))
     }
   })
+
+  socket.on(ROOM_EVENT.JOIN_RANDOM, async (_, callback) => {
+    try {
+      //TODO: Implement
+    } catch (e: any) {
+      console.error('Error: JoinRandom', e)
+      return callback?.(new ResponseFailure(e.message))
+    }
+  })
+
+  socket.on(ROOM_EVENT.LEAVE_ROOM, async ({ roomId }, callback) => {
+    try {
+      if (!roomId) {
+        throw new Error('RoomId is required')
+      }
+      //TODO: Implement
+    } catch (e: any) {
+      console.error('Error: LeaveRoom', e)
+      return callback?.(new ResponseFailure(e.message))
+    }
+  })
 }
-
-// export const handleRoom = (socket: Socket) => {
-//   const { userId = '' } = socket.user
-
-//   socket.on(ROOM_EVENT.JOIN_ROOM, async ({roomId}, callback) => {
-//     try {
-//       if (await MatchService.getUserRoom(userId)) {
-//         return callback?.(
-//           new ApiResponse('Already in a room', { roomId: socket.rooms }, 400)
-//         )
-//       }
-//       const roomId = generateUID()
-//       await MatchService.addUserToRoom(roomId, userId)
-//       socket.join(roomId)
-//       callback?.(new ApiResponse('success', { roomId }))
-//     } catch (e) {
-//       console.error('Error: JoinRoom', e)
-//     }
-//   })
-
-//   socket.on(ROOM_EVENT.CREATE_ROOM, async (_, callback) => {
-//     try {
-//       if (await MatchService.getUserRoom(userId)) {
-//         return callback?.(
-//           new ApiResponse('Already in a room', { roomId: socket.rooms }, 400)
-//         )
-//       }
-//       const roomId = generateUID()
-//       await MatchService.addUserToRoom(roomId, userId)
-//       socket.join(roomId)
-//       callback?.(new ApiResponse('success', { roomId }))
-//     } catch (e) {
-//       console.error('Error: JoinRoom', e)
-//     }
-//   })
-
-//   socket.on(ROOM_EVENT.LEAVE_ROOM, async (_, callback) => {
-//     try {
-//       if (await MatchService.getUserRoom(userId)) {
-//         return callback(
-//           new ApiResponse('Already in a room', { roomId: socket.rooms }, 400)
-//         )
-//       }
-//       const roomId = generateUID()
-//       await MatchService.addUserToRoom(roomId, userId)
-//       socket.join(roomId)
-//       callback(new ApiResponse('success', { roomId }))
-//     } catch (e) {
-//       console.error('Error: JoinRoom', e)
-//     }
-//   })
-// }
