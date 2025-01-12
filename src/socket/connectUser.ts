@@ -28,10 +28,6 @@ export const connectUser = (io: Server) => {
 
     handleRoom(socket)
 
-    // io.adapter.on('create-room', (room) => {
-    //   logger.info(`room ${room} was created`)
-    // })
-
     socket.on('disconnect', async () => {
       console.log(`User disconnected: ${socket.id}`)
       await UserService.removeUserSocketId(socket.user?.username)
