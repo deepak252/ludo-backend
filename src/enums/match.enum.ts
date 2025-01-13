@@ -6,15 +6,8 @@ export enum MatchStatus {
 }
 
 export enum LudoState {
-  throwDice = 'ThrowDice',
-  diceRolling = 'DiceRolling',
-  pickToken = 'PickToken',
-  tokenMoving = 'Moving'
-}
-
-export enum PlayerType {
-  throwDice = 'ThrowDice',
-  diceRolling = 'DiceRolling',
-  pickToken = 'PickToken',
-  tokenMoving = 'Moving'
+  RollDice = 'RollDice',
+  DiceRolling = 'DiceRolling',
+  MoveToken = 'MoveToken',
+  TokenMoving = 'TokenMoving'
 }

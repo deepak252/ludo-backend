@@ -5,6 +5,14 @@ export const ROOM_EVENT = {
 }
 
 export const MATCH_EVENT = {
-  THROW_DICE: 'throwDice',
-  PICK_TOKEN: 'pickToken'
+  ROLL_DICE: 'rollDice',
+  DICE_ROLLING: 'diceRolling',
+  DICE_ROLLED: 'diceRolled',
+
+  MOVE_TOKEN: 'moveToken',
+  TOKEN_MOVING: 'tokenMoving',
+  TOKEN_MOVED: 'tokenMoved',
+
+  KILL_TOKEN: 'killToken',
+  TOKEN_KILLED: 'tokenKilled'
 }

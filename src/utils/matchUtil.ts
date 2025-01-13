@@ -1,6 +1,10 @@
 import { DICE_VALUES, PLAYER_TYPES } from '../constants'
 import { LudoState, MatchStatus } from '../enums/match.enum'
-import { MatchState } from '../types/match.types'
+import { MatchState, TokenMove } from '../types/match.types'
+import _ from 'lodash'
+
+export const delay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
 
 export const createRoom = ({
   roomId,
@@ -25,7 +29,7 @@ export const createRoom = ({
     },
     status: MatchStatus.NotStarted,
     turn: 'green',
-    ludoState: LudoState.throwDice
+    ludoState: LudoState.RollDice
   }
   for (const player of PLAYER_TYPES) {
     for (let i = 0; i < 4; i++) {
@@ -45,50 +49,74 @@ export const getRandomDiceNumber = () => {
   return DICE_VALUES[di]
 }
 
-// export const createNewMatch = (
-//   playerCount: number,
-//   roomId: string,
-//   userId?: string
-// ): MatchState => {
-//   const matchState: MatchState = {
-//     roomId,
-//     status: MatchStatus.NotStarted,
-//     diceValue: 0,
-//     ludoState: LudoState.throwDice,
-//     turn: 'green',
-//     players: {
-//       green: { userId, tokens: [], isActive: false },
-//       yellow: { tokens: [], isActive: false },
-//       blue: { tokens: [], isActive: false },
-//       red: { tokens: [], isActive: false }
+/**
+ * Evaluates selected token next path index
+ * @param index - Token index
+ */
+export const getTokenMove = (
+  state: MatchState,
+  tokenIndex: number
+): TokenMove | null => {
+  const currPlayer = state.turn
+  const diceValue = state.diceValue
+  const currIndex = state.players[currPlayer].tokens[tokenIndex].pathIndex
+  let nextIndex = currIndex
+  if (currIndex === -1) {
+    if (diceValue === 6) {
+      nextIndex = 0
+    } else {
+      return null
+    }
+  } else {
+    if (currIndex + diceValue <= 56) {
+      nextIndex += diceValue
+    } else {
+      return null
+    }
+  }
+  return { currIndex, nextIndex }
+}
+
+export const getMovableTokens = (state: MatchState) => {
+  const movableTokens: (TokenMove & {
+    tokenIndex: number
+  })[] = []
+
+  for (let i = 0; i < 4; i++) {
+    const move = getTokenMove(state, i)
+    if (move) {
+      movableTokens.push({ ...move, tokenIndex: i })
+    }
+  }
+  return movableTokens
+}
+
+export const getTokenAutoMove = (state: MatchState) => {
+  const movableTokens = getMovableTokens(state)
+  if (!movableTokens.length) {
+    return null
+  }
+  const tokenAutoMove = movableTokens[0]
+  for (let i = 1; i < movableTokens.length; i++) {
+    movableTokens[i].tokenIndex = tokenAutoMove.tokenIndex
+    if (!_.isEqual(tokenAutoMove, movableTokens[i])) {
+      return null
+    }
+  }
+  return tokenAutoMove
+}
+// /**
+//  * Check if token is present at selected position, return token index
+//  * @param position
+//  * @returns token index if present at position, otherwise -1
+//  */
+// export const checkTokenPresent = (state: MatchState, position: Position) => {
+//   const currPlayer = state.turn
+//   const tokens = state.players[currPlayer].tokens
+//   for (let i = 0; i < 4; i++) {
+//     if (_.isEqual(tokens[i].position, position)) {
+//       return i
 //     }
 //   }
-
-//   const playerTypes: PlayerType[] = []
-//   playerTypes.push('green')
-//   if (playerCount >= 2) {
-//     playerTypes.push('blue')
-//   }
-//   if (playerCount >= 3) {
-//     playerTypes.push('yellow')
-//   }
-//   if (playerCount == 4) {
-//     playerTypes.push('red')
-//   }
-
-//   for (const playerType of playerTypes) {
-//     // ToDO: remove isActive
-//     matchState.players[playerType].isActive = true
-//     for (let i = 0; i < 4; i++) {
-//       matchState.players[playerType].tokens.push({
-//         id: `${playerType}_${i}`,
-//         index: i,
-//         color: playerType,
-//         pathIndex: -1,
-//         position: BoardConstants.HOME[playerType][i]
-//       })
-//     }
-//   }
-
-//   return matchState
+//   return -1
 // }
