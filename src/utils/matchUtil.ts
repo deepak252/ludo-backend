@@ -1,6 +1,49 @@
-// import BoardConstants from '../constants/boardConstants.js'
-// import { LudoState, MatchStatus } from '../enums/match.enum.js'
-// import { MatchState, PlayerType } from '../types/match.types.js'
+import { DICE_VALUES, PLAYER_TYPES } from '../constants'
+import { LudoState, MatchStatus } from '../enums/match.enum'
+import { MatchState } from '../types/match.types'
+
+export const createRoom = ({
+  roomId,
+  username,
+  maxPlayersCount
+}: {
+  roomId: string
+  username: string
+  maxPlayersCount: number
+}) => {
+  const match: MatchState = {
+    roomId,
+    maxPlayersCount,
+    joinedPlayersCount: 1,
+    createdBy: username,
+    diceValue: 0,
+    players: {
+      green: { username, tokens: [], isPlaying: false },
+      yellow: { tokens: [], isPlaying: false },
+      blue: { tokens: [], isPlaying: false },
+      red: { tokens: [], isPlaying: false }
+    },
+    status: MatchStatus.NotStarted,
+    turn: 'green',
+    ludoState: LudoState.throwDice
+  }
+  for (const player of PLAYER_TYPES) {
+    for (let i = 0; i < 4; i++) {
+      match.players[player].tokens.push({
+        id: `${player}_${i}`,
+        index: i,
+        color: player,
+        pathIndex: -1
+      })
+    }
+  }
+  return match
+}
+
+export const getRandomDiceNumber = () => {
+  const di = Math.floor(Math.random() * DICE_VALUES.length)
+  return DICE_VALUES[di]
+}
 
 // export const createNewMatch = (
 //   playerCount: number,

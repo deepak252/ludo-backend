@@ -1,8 +1,8 @@
-import { LudoState, MatchStatus } from '../enums/match.enum.js'
 import { RoomService } from '../services/room.service.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
+import { createRoom } from '../utils/matchUtil.js'
 import { generateUID } from '../utils/uuidHelper.js'
 
 export const createMatch = asyncHandler(async (req, _) => {
@@ -19,22 +19,49 @@ export const createMatch = asyncHandler(async (req, _) => {
   const roomId = generateUID()
 
   /// TODO: Create room in the database
-  await RoomService.setRoom({
-    roomId,
-    maxPlayersCount,
-    joinedPlayersCount: 1,
-    createdBy: username,
-    diceValue: 0,
-    players: {
-      green: { username, tokens: [], isPlaying: false },
-      yellow: { tokens: [], isPlaying: false },
-      blue: { tokens: [], isPlaying: false },
-      red: { tokens: [], isPlaying: false }
-    },
-    status: MatchStatus.NotStarted,
-    turn: 'green',
-    ludoState: LudoState.throwDice
-  })
+  await RoomService.setRoom(
+    createRoom({
+      roomId,
+      username,
+      maxPlayersCount
+    })
+  )
+  // await RoomService.setRoom({
+  //   roomId,
+  //   maxPlayersCount,
+  //   joinedPlayersCount: 1,
+  //   createdBy: username,
+  //   diceValue: 0,
+  //   players: {
+  //     green: { username, tokens: [], isPlaying: false },
+  //     yellow: { tokens: [], isPlaying: false },
+  //     blue: { tokens: [], isPlaying: false },
+  //     red: { tokens: [], isPlaying: false }
+  //   },
+  //   status: MatchStatus.NotStarted,
+  //   turn: 'green',
+  //   ludoState: LudoState.throwDice
+  // })
+
+  // id: string
+  // index: number
+  // color: LudoColor
+  // pathIndex: number
+  // position: Position
+  // highlight?: boolean
+
+  // for (const playerType of playerTypes) {
+  //   state.players[playerType].isActive = true
+  //   for (let i = 0; i < 4; i++) {
+  //     state.players[playerType].tokens.push({
+  //       id: `${playerType}_${i}`,
+  //       index: i,
+  //       color: playerType,
+  //       pathIndex: -1,
+  //       position: BoardConstants.HOME[playerType][i],
+  //     })
+  //   }
+  // }
   return new ApiResponse('Match created successfully', { roomId }, 201)
 })
 

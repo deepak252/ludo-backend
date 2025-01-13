@@ -14,7 +14,7 @@ export type TokenInfo = {
   index: number
   color: LudoColor
   pathIndex: number
-  position: Position
+  // position: Position
   highlight?: boolean
 }
 
