@@ -9,10 +9,9 @@ export const MATCH_EVENT = {
   DICE_ROLLING: 'diceRolling',
   DICE_ROLLED: 'diceRolled',
 
+  PICK_TOKEN: 'pickToken',
   MOVE_TOKEN: 'moveToken',
   TOKEN_MOVING: 'tokenMoving',
-  TOKEN_MOVED: 'tokenMoved',
 
-  KILL_TOKEN: 'killToken',
-  TOKEN_KILLED: 'tokenKilled'
+  KILL_TOKEN: 'killToken'
 }

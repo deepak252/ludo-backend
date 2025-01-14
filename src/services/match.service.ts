@@ -1,35 +1,28 @@
 import { redisClient } from '../config/redis.js'
 import { LudoState } from '../enums/match.enum.js'
+import { MatchState } from '../types/match.types.js'
 import { delay, getRandomDiceNumber } from '../utils/matchUtil.js'
 export class MatchService {
   static async rollDice(roomId: string) {
     const num = getRandomDiceNumber()
+    await redisClient.hset(`room:${roomId}`, {
+      diceValue: num,
+      ludoState: LudoState.DiceRolling
+    })
 
-    const pipeline = redisClient.pipeline()
-    pipeline.hset(`room:${roomId}`, 'diceValue', num)
-    pipeline.hset(`room:${roomId}`, 'ludoState', LudoState.DiceRolling)
-
-    try {
-      await pipeline.exec()
-      await delay(1000)
-      return num
-    } catch (error) {
-      console.error(`Failed to rollDice ${roomId}:`, error)
-      throw new Error(`Failed to rollDice ${roomId}`)
-    }
+    // const pipeline = redisClient.pipeline()
+    // pipeline.hset(`room:${roomId}`, 'diceValue', num)
+    // pipeline.hset(`room:${roomId}`, 'ludoState', LudoState.DiceRolling)
+    // await pipeline.exec()
+    await delay(1000)
+    return num
   }
 
-  // getMovableTokens = (state: OfflineMatchState) => {
-  //   const movableTokens: (TokenMove & {
-  //     tokenIndex: number
-  //   })[] = []
+  static async updateMatch(roomId: string, match: Partial<MatchState>) {
+    const updatedMatch = match.players
+      ? { ...match, players: JSON.stringify(match.players) }
+      : { ...match }
 
-  //   for (let i = 0; i < 4; i++) {
-  //     const move = getTokenMove(state, i)
-  //     if (move) {
-  //       movableTokens.push({ ...move, tokenIndex: i })
-  //     }
-  //   }
-  //   return movableTokens
-  // }
+    await redisClient.hset(`room:${roomId}`, updatedMatch)
+  }
 }

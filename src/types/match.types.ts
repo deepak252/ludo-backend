@@ -7,6 +7,7 @@ export type PlayerType = 'green' | 'yellow' | 'blue' | 'red'
 export type TokenMove = {
   currIndex: number
   nextIndex: number
+  delayInterval: number
 }
 
 export type TokenInfo = {

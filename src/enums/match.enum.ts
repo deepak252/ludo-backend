@@ -8,6 +8,7 @@ export enum MatchStatus {
 export enum LudoState {
   RollDice = 'RollDice',
   DiceRolling = 'DiceRolling',
-  MoveToken = 'MoveToken',
+  PickToken = 'PickToken',
+  // MoveToken = 'MoveToken',
   TokenMoving = 'TokenMoving'
 }

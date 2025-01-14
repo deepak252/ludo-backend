@@ -1,6 +1,12 @@
 import { DICE_VALUES, PLAYER_TYPES } from '../constants'
+import BoardConstants from '../constants/boardConstants'
 import { LudoState, MatchStatus } from '../enums/match.enum'
-import { MatchState, TokenMove } from '../types/match.types'
+import {
+  KilledToken,
+  MatchState,
+  PlayerType,
+  TokenMove
+} from '../types/match.types'
 import _ from 'lodash'
 
 export const delay = (ms: number) =>
@@ -74,7 +80,8 @@ export const getTokenMove = (
       return null
     }
   }
-  return { currIndex, nextIndex }
+  const delayInterval = BoardConstants.ANIMATION_DELAY * (nextIndex - currIndex)
+  return { currIndex, nextIndex, delayInterval }
 }
 
 export const getMovableTokens = (state: MatchState) => {
@@ -104,6 +111,61 @@ export const getTokenAutoMove = (state: MatchState) => {
     }
   }
   return tokenAutoMove
+}
+
+export const getNextPlayerTurn = (match: MatchState) => {
+  const currPlayer = match.turn
+  let nextPlayer = currPlayer
+  for (let i = 0; i < 8; i++) {
+    if (PLAYER_TYPES[i] === currPlayer) {
+      i++
+      while (i < 8) {
+        const j = i % 4
+        if (match.players[PLAYER_TYPES[j]].isPlaying) {
+          nextPlayer = PLAYER_TYPES[j]
+          break
+        }
+        i++
+      }
+      break
+    }
+  }
+  return nextPlayer
+}
+
+export const checkTokenKill = (
+  match: MatchState,
+  pathIndex: number
+): KilledToken[] => {
+  const currPlayer = match.turn
+  const pos = BoardConstants.PATH[currPlayer][pathIndex]
+  if (BoardConstants.SAFE_CELLS.includesDeep(pos)) {
+    console.log('Safe Cell')
+    return []
+  }
+  const killedTokens: KilledToken[] = []
+  Object.entries(match.players).forEach(([key, player]) => {
+    if (key === currPlayer || killedTokens.length) {
+      return
+    }
+    const tokens = player.tokens
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].pathIndex === -1) continue
+
+      if (
+        _.isEqual(
+          BoardConstants.PATH[key as PlayerType][tokens[i].pathIndex],
+          pos
+        )
+      ) {
+        killedTokens.push({
+          token: tokens[i],
+          player: key as PlayerType
+        })
+      }
+    }
+  })
+  return killedTokens
 }
 // /**
 //  * Check if token is present at selected position, return token index
