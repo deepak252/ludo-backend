@@ -1,3 +1,4 @@
+import { INVALID_USERNAMES } from '../constants/index.js'
 import User from '../models/user.model.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ResponseSuccess } from '../utils/ApiResponse.js'
@@ -56,6 +57,21 @@ export const signIn = asyncHandler(async (req, _) => {
     { user: user.toJSON(), accessToken },
     200
   )
+})
+
+export const checkUsernameAvailable = asyncHandler(async (req, _) => {
+  const { username } = req.body
+  if (!username) {
+    throw new ApiError('Username is required')
+  }
+  if (INVALID_USERNAMES.includes(username.toLowerCase())) {
+    throw new ApiError('Username is not available')
+  }
+  const result = await User.findByUsername(username)
+  if (result) {
+    throw new ApiError('Username is not available')
+  }
+  return new ResponseSuccess('Username is available', {}, 200)
 })
 
 export const signOut = asyncHandler(async (req: any, _: any) => {
