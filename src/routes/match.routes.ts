@@ -1,9 +1,9 @@
 import { createMatch, deleteMatch } from '../controllers/match.controller.js'
-import { verifyUer } from '../middlewares/auth.middleware.js'
 import { Router } from 'express'
+import { requireAuth } from '../middlewares/auth.middleware.js'
 const router = Router()
 
-router.post('/', verifyUer, createMatch)
-router.delete('/', verifyUer, deleteMatch)
+router.post('/', requireAuth, createMatch)
+router.delete('/', requireAuth, deleteMatch)
 
 export default router

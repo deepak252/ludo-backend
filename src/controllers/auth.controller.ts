@@ -1,5 +1,4 @@
 import User from '../models/user.model.js'
-import { UserService } from '../services/user.service.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ResponseSuccess } from '../utils/ApiResponse.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
@@ -29,19 +28,12 @@ export const signUp = asyncHandler(async (req, _) => {
   }
   user = await user.save()
   const accessToken = user.getAccessToken()
-  user = user.toJSON()
-  delete user.password
-  delete user.refreshToken
 
-  return new ResponseSuccess('Sign up successful', { user, accessToken }, 201)
-
-  // const { username } = req.body
-  // if (!username) {
-  //   throw new ApiError('Username is required')
-  // }
-  // const user = await UserService.createUser(username)
-  // req.session.user = user
-  // return new ResponseSuccess('Sign up successful', user, 201)
+  return new ResponseSuccess(
+    'Sign up successful',
+    { user: user.toJSON(), accessToken },
+    201
+  )
 })
 
 export const signIn = asyncHandler(async (req, _) => {
@@ -49,36 +41,42 @@ export const signIn = asyncHandler(async (req, _) => {
   if (!usernameOrEmail || !password) {
     throw new ApiError('username/email and password are required')
   }
-  let user = await User.findByUsernameOrEmail(usernameOrEmail)
-  if (!user || !(await user.isPasswordCorrect(password))) {
+  const user = await User.findByUsernameOrEmail(usernameOrEmail)
+  if (!user || !(await user.comparePassword(password))) {
     throw new ApiError('Invalid username/email or password')
   }
-  user = user.toJSON()
-  delete user.password
-  delete user.refreshToken
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id.toString()
   )
+  req.session.accessToken = accessToken
 
-  const options = {
-    httpOnly: true,
-    secure: true
-  }
-  // const { username } = req.body
-  // if (!username) {
-  //   throw new ApiError('Username is required')
-  // }
-  // const user = await UserService.getUser(username)
-  // if (!user) {
-  //   throw new ApiError('User not found')
-  // }
-  // req.session.user = user
-
-  // return new ResponseSuccess('Sign in successful', user, 201)
+  return new ResponseSuccess(
+    'Sign in successful',
+    { user: user.toJSON(), accessToken },
+    200
+  )
 })
 
 export const signOut = asyncHandler(async (req: any, _: any) => {
-  req.session.user = null
-  return new ResponseSuccess('Sign out successful', undefined, 201)
+  const isSessionDestroyed = await new Promise<boolean>((resolve, reject) => {
+    req.session.destroy((err: any) => {
+      if (err) {
+        reject(false)
+      } else {
+        resolve(true)
+      }
+    })
+  })
+  if (!isSessionDestroyed) {
+    throw new ApiError('Sign out failed')
+  }
+  await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $unset: { refreshToken: 1 } // remove the field from document
+    },
+    { new: true } //ensures that the updated document is returned.
+  )
+  return new ResponseSuccess('Sign out successful', {}, 200)
 })

@@ -18,7 +18,7 @@ interface IUser {
 
 // Put all user instance methods in this interface:
 interface IUserMethods {
-  isPasswordCorrect(cp: string): Promise<boolean>
+  comparePassword(password: string): Promise<boolean>
   getAccessToken(): string
   getRefreshToken(): string
 }
@@ -107,10 +107,8 @@ userSchema.pre('save', async function (next) {
   next()
 })
 
-userSchema.methods.isPasswordCorrect = async function (
-  candidatePassword: string
-) {
-  return await comparePassword(candidatePassword, this.password)
+userSchema.methods.comparePassword = async function (password: string) {
+  return await comparePassword(password, this.password)
 }
 
 userSchema.methods.getAccessToken = function () {
@@ -127,6 +125,14 @@ userSchema.methods.getRefreshToken = function () {
     _id: this._id.toString()
   })
 }
+
+userSchema.set('toJSON', {
+  transform: (_, ret: Partial<IUser>) => {
+    delete ret.password
+    delete ret.refreshToken
+    return ret
+  }
+})
 
 const User = model<IUser, UserModel>('User', userSchema)
 

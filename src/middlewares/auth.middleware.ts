@@ -1,70 +1,85 @@
 import { NextFunction, Request, Response } from 'express'
-import { UserService } from '../services/user.service.js'
+import { Socket } from 'socket.io'
 import { ApiError } from '../utils/ApiError.js'
+import { verifyAccessToken } from '../utils/authUtil.js'
+import User from '../models/user.model.js'
+import { UserService } from '../services/user.service.js'
 
-export const verifyUer = async (
+export const verifyUser = async (accessToken?: string) => {
+  if (!accessToken) {
+    throw new Error('Unauthorized access')
+  }
+  const decodedToken = verifyAccessToken(accessToken)
+  const user = await User.findById(decodedToken?._id)
+    .select('-password -refreshToken')
+    .lean()
+  if (!user) {
+    throw new Error('Invalid access token')
+  }
+  const { _id, username, email, fullName } = user
+  return { _id: _id.toString(), username, email, fullName }
+}
+
+/**
+ *  Verify accessToken (mandatory)
+ * */
+export const requireAuth = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const username = req.session.user?.username
-  if (!username || !(await UserService.getUser(username))) {
-    next(new ApiError('Not authorized', 401))
-  } else {
+  try {
+    const accessToken =
+      req.session.accessToken ||
+      req.headers.authorization?.replace('Bearer ', '')
+    req.user = await verifyUser(accessToken)
+
     next()
+  } catch (e: any) {
+    next(new ApiError(e?.message || 'Unauthorized access', 401))
   }
 }
-// import { ApiResponse } from '../utils/ApiResponse.js'
-// import { verifyAccessToken } from '../utils/authUtil.js'
 
-// /**
-//  *  Verify accessToken (mandatory)
-//  * */
-// export const verifyJWT = async (req, res, next) => {
-//   try {
-//     const accessToken =
-//       req.cookies?.accessToken ||
-//       req.headers.authorization?.replace('Bearer ', '')
-//     if (!accessToken) {
-//       throw new Error('token is required')
-//     }
-//     const decodedToken = verifyAccessToken(accessToken)
-//     const user = await User.findById(decodedToken?._id)
-//       .select('-password -refreshToken')
-//       .lean()
-//     if (!user) {
-//       throw new Error('Invalid access token')
-//     }
-//     // token verified successfully
-//     req.user = user
-//     next()
-//   } catch (err) {
-//     logger.error(err, 'verifyJWT')
-//     return res
-//       .status(401)
-//       .json(new ApiResponse('Authentication Error', undefined, 401))
-//   }
-// }
+/**
+ *  Verify accessToken (not mandatory)
+ * */
+export const optionalAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const accessToken =
+      req.session.accessToken ||
+      req.headers.authorization?.replace('Bearer ', '')
+    req.user = await verifyUser(accessToken)
+  } catch (e: any) {
+    console.log(e)
+  }
+  next()
+}
 
-// /**
-//  *  Verify accessToken (not mandatory)
-//  * */
-// export const checkUser = async (req, _, next) => {
-//   try {
-//     const accessToken =
-//       req.cookies?.accessToken ||
-//       req.headers.authorization?.replace('Bearer ', '')
-//     if (accessToken) {
-//       const decodedToken = verifyAccessToken(accessToken)
-//       let user = await User.findById(decodedToken?._id)
-//         .select('-password -refreshToken')
-//         .lean()
-//       if (user) {
-//         req.user = user
-//       }
-//     }
-//   } catch (err) {
-//     logger.error(err, 'checkUser')
-//   }
-//   next()
-// }
+/**
+ * Middleware to authenticate the user based on access token for Socket.IO
+ */
+export const requireSocketAuth = async (
+  socket: Socket,
+  next: (err?: any) => void
+) => {
+  try {
+    const accessToken = socket.handshake.headers['authorization']?.replace(
+      'Bearer ',
+      ''
+    )
+    if (!accessToken) {
+      throw new Error('Access token is required')
+    }
+
+    // Verify the user using the access token
+    socket.user = await verifyUser(accessToken)
+    await UserService.setUserSocketId(socket.user.username, socket.id)
+    next()
+  } catch (e: any) {
+    next(new Error(e.message || 'Unauthorized access'))
+  }
+}

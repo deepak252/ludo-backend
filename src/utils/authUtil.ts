@@ -7,6 +7,12 @@ import {
   REFRESH_TOKEN_EXPIRY
 } from '../config/environment.js'
 
+type JWTPayload = {
+  _id: string
+  username: string
+  email: string
+  fullName: string
+}
 /**
  * @returns JWT Access token
  */
@@ -15,12 +21,7 @@ export const generateAccessToken = ({
   username,
   email,
   fullName
-}: {
-  _id: string
-  username: string
-  email: string
-  fullName: string
-}) => {
+}: JWTPayload) => {
   return jwt.sign({ _id, username, email, fullName }, ACCESS_TOKEN_SECRET, {
     expiresIn: ACCESS_TOKEN_EXPIRY
   })
@@ -38,8 +39,8 @@ export const generateRefreshToken = ({ _id }: { _id: string }) => {
 /**
  * @param token - JWT Access token
  */
-export const verifyAccessToken = (token: string) => {
-  return jwt.verify(token, ACCESS_TOKEN_SECRET)
+export const verifyAccessToken = (token: string): JWTPayload | null => {
+  return jwt.verify(token, ACCESS_TOKEN_SECRET) as JWTPayload
 }
 
 /**

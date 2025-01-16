@@ -6,6 +6,7 @@ import { sessionMiddleware } from '../middlewares/session.middleware.js'
 import { UserService } from '../services/user.service.js'
 import { handleRoom } from './room.js'
 import { handleMatch } from './match.js'
+import { requireSocketAuth } from '../middlewares/auth.middleware.js'
 
 export const setupSocket = (httpServer: any) => {
   const io = new Server(httpServer, {
@@ -21,21 +22,22 @@ export const setupSocket = (httpServer: any) => {
   // console.log('Initializing Socket.IO namespaces...')
   // connectUser(io)
 
-  io.use(async (socket, next) => {
-    // socket.user = {}
-    const username = socket.handshake.headers?.username as string
-    if (!username) {
-      next(new Error('Invalid user'))
-    } else {
-      socket.user = {
-        username
-      }
-      await UserService.setUserSocketId(username, socket.id)
-      next()
-    }
-    // console.log(socket.handshake.headers)
-    // console.log(socket.handshake.headers.userid)
-  })
+  io.use(requireSocketAuth)
+
+  // io.use(async (socket, next) => {
+  //   const username = socket.handshake.headers?.username as string
+  //   if (!username) {
+  //     next(new Error('Invalid user'))
+  //   } else {
+  //     socket.user = {
+  //       username
+  //     }
+  //     await UserService.setUserSocketId(username, socket.id)
+  //     next()
+  //   }
+  //   // console.log(socket.handshake.headers)
+  //   // console.log(socket.handshake.headers.userid)
+  // })
 
   io.on('connection', (socket) => {
     const { username } = socket.user ?? {}
