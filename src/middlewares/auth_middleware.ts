@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { Socket } from 'socket.io'
 import { ApiError } from '../utils/ApiError.js'
-import { verifyAccessToken } from '../utils/authUtil.js'
-import User from '../models/user.model.js'
-import { UserService } from '../services/user.service.js'
+import { verifyAccessToken } from '../utils/auth_util.js'
+import User from '../models/user_model.js'
+import { UserService } from '../services/user_service.js'
 
 export const verifyUser = async (accessToken?: string) => {
   if (!accessToken) {

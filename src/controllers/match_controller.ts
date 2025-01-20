@@ -1,9 +1,9 @@
-import { RoomService } from '../services/room.service.js'
+import { RoomService } from '../services/room_service.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
-import { asyncHandler } from '../utils/asyncHandler.js'
-import { createRoom } from '../utils/matchUtil.js'
-import { generateUID } from '../utils/uuidHelper.js'
+import { asyncHandler } from '../utils/async_handler.js'
+import { createRoom } from '../utils/match_util.js'
+import { generateUID } from '../utils/uuid_util.js'
 
 export const createMatch = asyncHandler(async (req, _) => {
   const { maxPlayersCount } = req.body
@@ -26,6 +26,7 @@ export const createMatch = asyncHandler(async (req, _) => {
       maxPlayersCount
     })
   )
+  return new ApiResponse('Match created successfully', { roomId }, 201)
   // await RoomService.setRoom({
   //   roomId,
   //   maxPlayersCount,
@@ -62,7 +63,7 @@ export const createMatch = asyncHandler(async (req, _) => {
   //     })
   //   }
   // }
-  return new ApiResponse('Match created successfully', { roomId }, 201)
+  // return new ApiResponse('Match created successfully', { roomId }, 201)
 })
 
 export const deleteMatch = asyncHandler(async (req, _) => {

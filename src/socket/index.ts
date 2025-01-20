@@ -2,11 +2,11 @@ import { Server } from 'socket.io'
 import { createAdapter } from '@socket.io/redis-adapter'
 import { pubClient, subClient } from '../config/redis.js'
 // import { connectUser } from './connectUser.js'
-import { sessionMiddleware } from '../middlewares/session.middleware.js'
-import { UserService } from '../services/user.service.js'
+import { sessionMiddleware } from '../middlewares/session_middleware.js'
+import { UserService } from '../services/user_service.js'
 import { handleRoom } from './room.js'
 import { handleMatch } from './match.js'
-import { requireSocketAuth } from '../middlewares/auth.middleware.js'
+import { requireSocketAuth } from '../middlewares/auth_middleware.js'
 
 export const setupSocket = (httpServer: any) => {
   const io = new Server(httpServer, {

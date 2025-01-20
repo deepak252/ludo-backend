@@ -1,6 +1,6 @@
 import { redisClient } from '../config/redis.js'
 import { PLAYER_TYPES } from '../constants/index.js'
-import { LudoState, MatchStatus } from '../enums/match.enum.js'
+import { LudoState, MatchStatus } from '../constants/enums.js'
 import { MatchState, PlayerType } from '../types/match.types.js'
 
 export class RoomService {

@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io'
-import { ROOM_EVENT } from './socket.event.js'
+import { ROOM_EVENT } from './socket_event.js'
 import { ResponseFailure, ResponseSuccess } from '../utils/ApiResponse.js'
-import { RoomService } from '../services/room.service.js'
+import { RoomService } from '../services/room_service.js'
 
 export const handleRoom = (socket: Socket) => {
   const { username = '' } = socket.user ?? {}

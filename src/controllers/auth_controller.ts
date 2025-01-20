@@ -1,11 +1,12 @@
 import { INVALID_USERNAMES } from '../constants/index.js'
-import User from '../models/user.model.js'
+import User from '../models/user_model.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ResponseSuccess } from '../utils/ApiResponse.js'
-import { asyncHandler } from '../utils/asyncHandler.js'
+import { asyncHandler } from '../utils/async_handler.js'
 
 const generateAccessAndRefreshTokens = async (userId: string) => {
   const user = await User.findById(userId)
+
   if (!user) {
     throw new ApiError('User not found')
   }

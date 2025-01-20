@@ -3,6 +3,4 @@ export type User = {
   username: string
   fullName: string
   email: string
-  //   id: number
-  // username: string
 }

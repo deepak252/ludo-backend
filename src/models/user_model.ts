@@ -1,36 +1,13 @@
-import { Schema, model, Model, HydratedDocument } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import bcryptjs from 'bcryptjs'
 import { REGEX, INVALID_USERNAMES } from '../constants'
 import {
   comparePassword,
   generateAccessToken,
   generateRefreshToken
-} from '../utils/authUtil.js'
+} from '../utils/auth_util.js'
 import { ApiError } from '../utils/ApiError'
-
-interface IUser {
-  username: string
-  fullName: string
-  email: string
-  password: string
-  refreshToken: string
-}
-
-// Put all user instance methods in this interface:
-interface IUserMethods {
-  comparePassword(password: string): Promise<boolean>
-  getAccessToken(): string
-  getRefreshToken(): string
-}
-
-// Create a new Model type that knows about IUserMethods...
-interface UserModel extends Model<IUser, object, IUserMethods> {
-  findByUsername(name: string): Promise<HydratedDocument<IUser, IUserMethods>>
-  findByEmail(name: string): Promise<HydratedDocument<IUser, IUserMethods>>
-  findByUsernameOrEmail(
-    name: string
-  ): Promise<HydratedDocument<IUser, IUserMethods>>
-}
+import { IUser, IUserMethods, UserModel } from '../interfaces/user_interface'
 
 // And a schema that knows about IUserMethods
 const userSchema = new Schema<IUser, UserModel, IUserMethods>(

@@ -1,6 +1,6 @@
 import { DICE_VALUES, PLAYER_TYPES } from '../constants'
 import BoardConstants from '../constants/boardConstants'
-import { LudoState, MatchStatus } from '../enums/match.enum'
+import { LudoState, MatchStatus } from '../constants/enums'
 import {
   KilledToken,
   MatchState,

@@ -3,9 +3,9 @@ import {
   signIn,
   signOut,
   signUp
-} from '../controllers/auth.controller.js'
+} from '../controllers/auth_controller.js'
 import { Router } from 'express'
-import { requireAuth } from '../middlewares/auth.middleware.js'
+import { requireAuth } from '../middlewares/auth_middleware.js'
 const router = Router()
 
 router.post('/sign-up', signUp)

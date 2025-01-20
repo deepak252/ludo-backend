@@ -3,7 +3,7 @@ import app from './app.js'
 import { setupSocket } from './socket/index.js'
 import { SERVER_PORT } from './config/environment.js'
 import { connectDB } from './config/db.js'
-import './utils/listUtil.ts'
+import './utils/list_util.js'
 
 connectDB()
   .then(() => {

@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import authRouter from './auth.routes.js'
-import userRouter from './user.routes.js'
-import matchRouter from './match.routes.js'
+import authRouter from './auth_routes.js'
+import userRouter from './user_routes.js'
+import matchRouter from './match_routes.js'
 
 const router = Router()
 

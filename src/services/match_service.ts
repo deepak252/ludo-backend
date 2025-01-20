@@ -1,7 +1,7 @@
 import { redisClient } from '../config/redis.js'
-import { LudoState } from '../enums/match.enum.js'
+import { LudoState } from '../constants/enums.js'
 import { MatchState } from '../types/match.types.js'
-import { delay, getRandomDiceNumber } from '../utils/matchUtil.js'
+import { delay, getRandomDiceNumber } from '../utils/match_util.js'
 export class MatchService {
   static async rollDice(roomId: string) {
     const num = getRandomDiceNumber()

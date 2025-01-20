@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Socket, Server } from 'socket.io'
-import { MATCH_EVENT } from './socket.event.js'
+import { MATCH_EVENT } from './socket_event.js'
 import { ResponseFailure, ResponseSuccess } from '../utils/ApiResponse.js'
-import { RoomService } from '../services/room.service.js'
-import { MatchService } from '../services/match.service.js'
-import { LudoState, MatchStatus } from '../enums/match.enum.js'
+import { RoomService } from '../services/room_service.js'
+import { MatchService } from '../services/match_service.js'
+import { LudoState, MatchStatus } from '../constants/enums.js'
 import {
   checkTokenKill,
   delay,
   getMovableTokens,
   getNextPlayerTurn,
   getTokenAutoMove
-} from '../utils/matchUtil.js'
+} from '../utils/match_util.js'
 import { MatchState } from '../types/match.types.js'
 
 export const handleMatch = (io: Server, socket: Socket) => {
