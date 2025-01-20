@@ -16,8 +16,7 @@ export const verifyUser = async (accessToken?: string) => {
   if (!user) {
     throw new Error('Invalid access token')
   }
-  const { _id, username, email, fullName } = user
-  return { _id: _id.toString(), username, email, fullName }
+  return user
 }
 
 /**

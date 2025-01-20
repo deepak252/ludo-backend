@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, HydratedDocument, Model } from 'mongoose'
 import bcryptjs from 'bcryptjs'
 import { REGEX, INVALID_USERNAMES } from '../constants'
 import {
@@ -7,10 +7,33 @@ import {
   generateRefreshToken
 } from '../utils/auth_util.js'
 import { ApiError } from '../utils/ApiError'
-import { IUser, IUserMethods, UserModel } from '../interfaces/user_interface'
+import { User } from '../types/user.types'
+
+type UserDocument = User & {
+  password: string
+  refreshToken: string
+}
+
+interface IUserMethods {
+  comparePassword(password: string): Promise<boolean>
+  getAccessToken(): string
+  getRefreshToken(): string
+}
+
+interface UserModel extends Model<UserDocument, object, IUserMethods> {
+  findByUsername(
+    name: string
+  ): Promise<HydratedDocument<UserDocument, IUserMethods>>
+  findByEmail(
+    name: string
+  ): Promise<HydratedDocument<UserDocument, IUserMethods>>
+  findByUsernameOrEmail(
+    name: string
+  ): Promise<HydratedDocument<UserDocument, IUserMethods>>
+}
 
 // And a schema that knows about IUserMethods
-const userSchema = new Schema<IUser, UserModel, IUserMethods>(
+const userSchema = new Schema<UserDocument, UserModel, IUserMethods>(
   {
     username: {
       type: String,
@@ -104,13 +127,13 @@ userSchema.methods.getRefreshToken = function () {
 }
 
 userSchema.set('toJSON', {
-  transform: (_, ret: Partial<IUser>) => {
+  transform: (_, ret: Partial<UserDocument>) => {
     delete ret.password
     delete ret.refreshToken
     return ret
   }
 })
 
-const User = model<IUser, UserModel>('User', userSchema)
+const User = model<UserDocument, UserModel>('User', userSchema)
 
 export default User

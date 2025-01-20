@@ -3,14 +3,58 @@ import BoardConstants from '../constants/boardConstants'
 import { LudoState, MatchStatus } from '../constants/enums'
 import {
   KilledToken,
-  MatchState,
-  PlayerType,
+  Match,
+  Player,
+  PlayerColor,
   TokenMove
 } from '../types/match.types'
 import _ from 'lodash'
+import { Types } from 'mongoose'
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms))
+
+export const createNewMatch = ({
+  roomId,
+  userId,
+  maxPlayersCount
+}: {
+  roomId: string
+  userId: Types.ObjectId
+  maxPlayersCount: number
+}): Match => {
+  if (maxPlayersCount < 2 || maxPlayersCount > 4) {
+    throw new Error('Invalid number of players. Must be between 2 and 4.')
+  }
+
+  const match: Match = {
+    roomId,
+    maxPlayersCount,
+    joinedPlayersCount: 1,
+    createdBy: userId,
+    diceValue: 0,
+    players: {
+      green: { userId: userId, tokens: [], isPlaying: false },
+      yellow: { tokens: [], isPlaying: false },
+      blue: { tokens: [], isPlaying: false },
+      red: { tokens: [], isPlaying: false }
+    },
+    status: MatchStatus.NotStarted,
+    ludoState: LudoState.RollDice,
+    turn: 'green'
+  }
+  for (const player of PLAYER_TYPES) {
+    for (let i = 0; i < 4; i++) {
+      match.players[player].tokens.push({
+        id: `${player}_${i}`,
+        index: i,
+        color: player,
+        pathIndex: -1
+      })
+    }
+  }
+  return match
+}
 
 export const createRoom = ({
   roomId,
@@ -154,13 +198,13 @@ export const checkTokenKill = (
 
       if (
         _.isEqual(
-          BoardConstants.PATH[key as PlayerType][tokens[i].pathIndex],
+          BoardConstants.PATH[key as PlayerColor][tokens[i].pathIndex],
           pos
         )
       ) {
         killedTokens.push({
           token: tokens[i],
-          player: key as PlayerType
+          player: key as PlayerColor
         })
       }
     }

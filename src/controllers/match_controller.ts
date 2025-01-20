@@ -1,8 +1,11 @@
+import { LudoState, MatchStatus } from '../constants/enums.js'
+import Match from '../models/match_model.js'
+import { MatchService } from '../services/match_service.js'
 import { RoomService } from '../services/room_service.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { asyncHandler } from '../utils/async_handler.js'
-import { createRoom } from '../utils/match_util.js'
+import { createNewMatch } from '../utils/match_util.js'
 import { generateUID } from '../utils/uuid_util.js'
 
 export const createMatch = asyncHandler(async (req, _) => {
@@ -10,7 +13,12 @@ export const createMatch = asyncHandler(async (req, _) => {
   if (isNaN(maxPlayersCount) || maxPlayersCount > 4 || maxPlayersCount < 2) {
     throw new ApiError(`Invalid maxPlayers value - ${maxPlayersCount}`)
   }
-  const username = req.session.user?.username ?? ''
+  const username = req.user?.username ?? ''
+  const userId = req.user?._id
+
+  if (!userId) {
+    throw new Error('User ID is required.')
+  }
 
   const currRoom = await RoomService.getUserRoom(username)
   if (currRoom) {
@@ -18,15 +26,40 @@ export const createMatch = asyncHandler(async (req, _) => {
   }
   const roomId = generateUID()
 
-  /// TODO: Create room in the database
-  await RoomService.setRoom(
-    createRoom({
-      roomId,
-      username,
-      maxPlayersCount
-    })
-  )
-  return new ApiResponse('Match created successfully', { roomId }, 201)
+  let match = new Match(createNewMatch({ roomId, userId, maxPlayersCount }))
+
+  // let match = new Match({
+  //   roomId,
+  //   maxPlayersCount,
+  //   joinedPlayersCount: 1,
+  //   createdBy: userId,
+  //   diceValue: 0,
+  //   players: {
+  //     green: { userId, tokens: [], isPlaying: false },
+  //     yellow: { tokens: [], isPlaying: false },
+  //     blue: { tokens: [], isPlaying: false },
+  //     red: { tokens: [], isPlaying: false }
+  //   },
+  //   status: MatchStatus.NotStarted,
+  //   ludoState: LudoState.RollDice,
+  //   turn: 'green'
+  // })
+
+  const error = match.validateSync()
+  if (error) {
+    throw new ApiError(error.message)
+  }
+  match = await match.save()
+
+  await MatchService.updateMatch(roomId, match)
+  // await RoomService.setRoom(
+  //   createRoom({
+  //     roomId,
+  //     username,
+  //     maxPlayersCount
+  //   })
+  // )
+  return new ApiResponse('Match created successfully', match, 201)
   // await RoomService.setRoom({
   //   roomId,
   //   maxPlayersCount,
@@ -71,7 +104,7 @@ export const deleteMatch = asyncHandler(async (req, _) => {
   if (!roomId) {
     throw new ApiError('Field roomId is required')
   }
-  const username = req.session.user?.username ?? ''
+  const username = req.user?.username ?? ''
   const currRoom = await RoomService.getRoom(roomId)
   if (!currRoom) {
     throw new ApiError('Match not found')

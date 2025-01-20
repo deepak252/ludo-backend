@@ -3,7 +3,7 @@ import { User } from './user.types'
 declare module 'express' {
   interface Request {
     session: {
-      user?: User
+      // user?: User
       accessToken?: string
     }
     user?: User

@@ -1,7 +1,17 @@
-import { Schema, model } from 'mongoose'
-import { IMatch, MatchModel } from '../interfaces/match_interface'
+import { HydratedDocument, Model, Schema, model } from 'mongoose'
 import { LudoState, MatchStatus } from '../constants/enums'
 import { PLAYER_TYPES } from '../constants'
+import { Match } from '../types/match.types'
+
+type MatchDocument = Match
+
+interface MatchModel extends Model<MatchDocument, object, object> {
+  findByRoomId(roomId: string): Promise<HydratedDocument<MatchDocument, object>>
+  //   findActiveMatches(): Promise<(IMatch & IMatchMethods)[]>
+  //   findMatchesByUserId(
+  //     userId: Types.ObjectId
+  //   ): Promise<(IMatch & IMatchMethods)[]>
+}
 
 const tokenInfoSchema = new Schema(
   {
@@ -27,7 +37,7 @@ const playerSchema = new Schema(
   { _id: false }
 )
 
-const matchSchema = new Schema<IMatch, MatchModel, object>(
+const matchSchema = new Schema<MatchDocument, MatchModel, object>(
   {
     roomId: {
       type: String,
@@ -85,8 +95,8 @@ const matchSchema = new Schema<IMatch, MatchModel, object>(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
-      index: true
+      index: true,
+      required: [true, 'Owner Id is required']
     }
   },
   {
@@ -94,6 +104,6 @@ const matchSchema = new Schema<IMatch, MatchModel, object>(
   }
 )
 
-const Match = model<IMatch, MatchModel>('Match', matchSchema)
+const Match = model<MatchDocument, MatchModel>('Match', matchSchema)
 
 export default Match
