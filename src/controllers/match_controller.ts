@@ -9,13 +9,9 @@ export const createMatch = asyncHandler(async (req, _) => {
   if (isNaN(maxPlayersCount) || maxPlayersCount > 4 || maxPlayersCount < 2) {
     throw new ApiError(`Invalid maxPlayers value - ${maxPlayersCount}`)
   }
-  const username = req.user!.username ?? ''
+  // const username = req.user!.username ?? ''
   const userId = req.user!._id
 
-  const currRoom = await RoomService.getUserRoom(username)
-  if (currRoom) {
-    throw new ApiError(`Already in a match - ${currRoom}`)
-  }
   const match = await MatchService.createMatch(userId, maxPlayersCount)
   return new ApiResponse('Match created successfully', match, 201)
   // const roomId = generateUID()

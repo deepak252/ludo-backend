@@ -88,6 +88,7 @@ const matchSchema = new Schema<MatchDocument, MatchModel, object>(
         blue: playerSchema,
         yellow: playerSchema
       },
+      _id: false,
       required: true,
       default: () => ({
         red: { tokens: [], isPlaying: false },

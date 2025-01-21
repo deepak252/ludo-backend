@@ -13,7 +13,7 @@ const wait = async (ms: number) =>
   )
 
 router.use(async (req, res, next) => {
-  await wait(1000)
+  await wait(0)
   next()
 })
 

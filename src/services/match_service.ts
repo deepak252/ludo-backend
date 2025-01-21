@@ -16,6 +16,10 @@ import { PLAYER_TYPES } from '../constants/index.js'
 import { ApiError } from '../utils/ApiError.js'
 export class MatchService {
   static async createMatch(userId: Types.ObjectId, maxPlayersCount: number) {
+    const currRoom = await MatchService.getUserActiveMatch(userId.toString())
+    if (currRoom) {
+      throw new ApiError(`Already in a match - ${currRoom.roomId}`)
+    }
     const roomId = generateUID()
 
     let match = new Match(createNewMatch({ roomId, userId, maxPlayersCount }))
