@@ -3,8 +3,7 @@ import BoardConstants from '../constants/boardConstants'
 import { LudoState, MatchStatus } from '../constants/enums'
 import {
   KilledToken,
-  Match,
-  Player,
+  MatchDocument,
   PlayerColor,
   TokenMove
 } from '../types/match.types'
@@ -22,12 +21,8 @@ export const createNewMatch = ({
   roomId: string
   userId: Types.ObjectId
   maxPlayersCount: number
-}): Match => {
-  if (maxPlayersCount < 2 || maxPlayersCount > 4) {
-    throw new Error('Invalid number of players. Must be between 2 and 4.')
-  }
-
-  const match: Match = {
+}): MatchDocument => {
+  const match: MatchDocument = {
     roomId,
     maxPlayersCount,
     joinedPlayersCount: 1,
@@ -39,7 +34,7 @@ export const createNewMatch = ({
       blue: { tokens: [], isPlaying: false },
       red: { tokens: [], isPlaying: false }
     },
-    status: MatchStatus.NotStarted,
+    status: MatchStatus.Waiting,
     ludoState: LudoState.RollDice,
     turn: 'green'
   }
@@ -77,7 +72,7 @@ export const createRoom = ({
       blue: { tokens: [], isPlaying: false },
       red: { tokens: [], isPlaying: false }
     },
-    status: MatchStatus.NotStarted,
+    status: MatchStatus.Waiting,
     turn: 'green',
     ludoState: LudoState.RollDice
   }

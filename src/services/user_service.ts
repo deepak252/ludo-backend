@@ -21,6 +21,16 @@ export class UserService {
   //   return { username }
   // }
 
+  static async getUserRoomId(userId: string) {
+    const roomId = await redisClient.hget(`user:${userId}`, 'room')
+    if (roomId) {
+      return roomId
+    }
+  }
+  static async setUserRoomId(userId: string, roomId: string) {
+    await redisClient.hset(`user:${userId}`, 'room', roomId)
+  }
+
   static async getUserSocketId(userId: string) {
     return await redisClient.hget(`user:${userId}`, 'socketId')
   }

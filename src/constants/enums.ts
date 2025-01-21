@@ -1,5 +1,5 @@
 export enum MatchStatus {
-  NotStarted = 'NotStarted',
+  Waiting = 'Waiting',
   InProgress = 'InProgress',
   Completed = 'Completed',
   Cancelled = 'Cancelled'

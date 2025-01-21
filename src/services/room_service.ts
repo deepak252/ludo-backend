@@ -1,7 +1,7 @@
 import { redisClient } from '../config/redis.js'
 import { PLAYER_TYPES } from '../constants/index.js'
 import { LudoState, MatchStatus } from '../constants/enums.js'
-import { MatchState, PlayerColor } from '../types/match.types.js'
+import { PlayerColor } from '../types/match.types.js'
 
 export class RoomService {
   static async checkRoomExists(roomId: string) {

@@ -29,7 +29,8 @@ export type Player = {
   isPlaying: boolean
 }
 
-export type Match = {
+export type MatchDocument = {
+  _id?: Types.ObjectId
   roomId: string
   maxPlayersCount: number
   joinedPlayersCount: number

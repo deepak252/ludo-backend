@@ -1,4 +1,4 @@
-import { User } from './user.types'
+import { UserDocument } from './user.types'
 
 declare module 'express' {
   interface Request {
@@ -6,13 +6,13 @@ declare module 'express' {
       // user?: User
       accessToken?: string
     }
-    user?: User
+    user?: UserDocument
   }
 }
 
 declare module 'express-session' {
   interface SessionData {
-    user?: User // Add the user property
+    user?: UserDocument // Add the user property
     accessToken?: string // Add the accessToken property
   }
 }

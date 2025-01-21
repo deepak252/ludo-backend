@@ -1,8 +1,10 @@
 import { Types } from 'mongoose'
 
-export type User = {
+export type UserDocument = {
   _id: Types.ObjectId
   username: string
   fullName: string
   email: string
+  password: string
+  refreshToken: string
 }

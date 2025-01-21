@@ -1,12 +1,16 @@
 import { HydratedDocument, Model, Schema, model } from 'mongoose'
 import { LudoState, MatchStatus } from '../constants/enums'
 import { PLAYER_TYPES } from '../constants'
-import { Match } from '../types/match.types'
-
-type MatchDocument = Match
+import { MatchDocument } from '../types/match.types'
 
 interface MatchModel extends Model<MatchDocument, object, object> {
   findByRoomId(roomId: string): Promise<HydratedDocument<MatchDocument, object>>
+  findByRoomIdAndUpdate(
+    roomId: string,
+    update: Partial<MatchDocument>
+  ): Promise<MatchDocument | null>
+  findActiveMatchesByUser(userId: string): Promise<MatchDocument[]>
+
   //   findActiveMatches(): Promise<(IMatch & IMatchMethods)[]>
   //   findMatchesByUserId(
   //     userId: Types.ObjectId
@@ -37,6 +41,15 @@ const playerSchema = new Schema(
   { _id: false }
 )
 
+// const playerSchema = new Schema(
+//   {
+//     userId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+//     tokens: [tokenInfoSchema],
+//     isPlaying: { type: Boolean, required: true, default: false }
+//   },
+//   { _id: false }
+// )
+
 const matchSchema = new Schema<MatchDocument, MatchModel, object>(
   {
     roomId: {
@@ -60,7 +73,7 @@ const matchSchema = new Schema<MatchDocument, MatchModel, object>(
       type: String,
       enum: Object.values(MatchStatus),
       required: true,
-      default: MatchStatus.NotStarted
+      default: MatchStatus.Waiting
     },
     ludoState: {
       type: String,
@@ -69,16 +82,31 @@ const matchSchema = new Schema<MatchDocument, MatchModel, object>(
       default: LudoState.RollDice
     },
     players: {
-      type: Map,
-      of: playerSchema,
+      type: {
+        red: playerSchema,
+        green: playerSchema,
+        blue: playerSchema,
+        yellow: playerSchema
+      },
       required: true,
       default: () => ({
+        red: { tokens: [], isPlaying: false },
         green: { tokens: [], isPlaying: false },
-        yellow: { tokens: [], isPlaying: false },
         blue: { tokens: [], isPlaying: false },
-        red: { tokens: [], isPlaying: false }
+        yellow: { tokens: [], isPlaying: false }
       })
     },
+    // players: {
+    //   type: Map,
+    //   of: playerSchema,
+    //   required: true,
+    //   default: () => ({
+    //     green: { tokens: [], isPlaying: false },
+    //     yellow: { tokens: [], isPlaying: false },
+    //     blue: { tokens: [], isPlaying: false },
+    //     red: { tokens: [], isPlaying: false }
+    //   })
+    // },
     turn: {
       type: String,
       enum: PLAYER_TYPES,
@@ -100,7 +128,37 @@ const matchSchema = new Schema<MatchDocument, MatchModel, object>(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    statics: {
+      findByRoomId(roomId) {
+        return this.findOne({ roomId })
+      },
+      findByRoomIdAndUpdate(roomId, update) {
+        return this.findOneAndUpdate({ roomId }, update, {
+          new: true,
+          runValidators: true
+        })
+      },
+      findActiveMatchesByUser(userId) {
+        return this.find({
+          $and: [
+            {
+              $or: [
+                { 'players.green.userId': userId },
+                { 'players.yellow.userId': userId },
+                { 'players.blue.userId': userId },
+                { 'players.red.userId': userId }
+              ]
+            },
+            {
+              status: {
+                $in: [MatchStatus.Waiting, MatchStatus.InProgress]
+              }
+            }
+          ]
+        }).sort({ createdAt: -1 })
+      }
+    }
   }
 )
 

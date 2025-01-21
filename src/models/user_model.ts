@@ -7,12 +7,7 @@ import {
   generateRefreshToken
 } from '../utils/auth_util.js'
 import { ApiError } from '../utils/ApiError'
-import { User } from '../types/user.types'
-
-type UserDocument = User & {
-  password: string
-  refreshToken: string
-}
+import { UserDocument } from '../types/user.types'
 
 interface IUserMethods {
   comparePassword(password: string): Promise<boolean>

@@ -1,4 +1,4 @@
-import { PlayerType, Position } from '../types/match.types.js'
+import { PlayerColor, Position } from '../types/match.types.js'
 
 export default class BoardConstants {
   static readonly ANIMATION_DELAY = 200
@@ -21,7 +21,7 @@ export default class BoardConstants {
     [6, 1]
   ]
 
-  static readonly HOME: Record<PlayerType, Position[]> = Object.freeze({
+  static readonly HOME: Record<PlayerColor, Position[]> = Object.freeze({
     green: [
       [1.5, 1.5],
       [3.5, 1.5],
@@ -86,7 +86,7 @@ export default class BoardConstants {
     [8, 7]
   ]
 
-  static readonly PATH: Record<PlayerType, Position[]> = Object.freeze({
+  static readonly PATH: Record<PlayerColor, Position[]> = Object.freeze({
     green: [
       [6, 1],
       [6, 2],
