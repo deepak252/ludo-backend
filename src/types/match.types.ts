@@ -24,7 +24,7 @@ export type KilledToken = {
 }
 
 export type Player = {
-  userId?: Types.ObjectId
+  userId?: Types.ObjectId | string | null
   tokens: TokenInfo[]
   isPlaying: boolean
 }
@@ -38,7 +38,7 @@ export type MatchDocument = {
   players: Record<PlayerColor, Player>
   turn: PlayerColor
   diceValue: number
-  createdBy: Types.ObjectId
+  createdBy: Types.ObjectId | string
   ludoState: LudoState
   createdAt?: Date
   updatedAt?: Date

@@ -10,6 +10,7 @@ interface MatchModel extends Model<MatchDocument, object, object> {
     update: Partial<MatchDocument>
   ): Promise<MatchDocument | null>
   findActiveMatchesByUser(userId: string): Promise<MatchDocument[]>
+  findPreviousMatchesByUser(userId: string): Promise<MatchDocument[]>
 
   //   findActiveMatches(): Promise<(IMatch & IMatchMethods)[]>
   //   findMatchesByUserId(
@@ -154,6 +155,25 @@ const matchSchema = new Schema<MatchDocument, MatchModel, object>(
             {
               status: {
                 $in: [MatchStatus.Waiting, MatchStatus.InProgress]
+              }
+            }
+          ]
+        }).sort({ createdAt: -1 })
+      },
+      findPreviousMatchesByUser(userId) {
+        return this.find({
+          $and: [
+            {
+              $or: [
+                { 'players.green.userId': userId },
+                { 'players.yellow.userId': userId },
+                { 'players.blue.userId': userId },
+                { 'players.red.userId': userId }
+              ]
+            },
+            {
+              status: {
+                $in: [MatchStatus.Completed, MatchStatus.Cancelled]
               }
             }
           ]

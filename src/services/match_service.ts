@@ -1,4 +1,3 @@
-import { Types } from 'mongoose'
 import { redisClient } from '../config/redis.js'
 import { LudoState, MatchStatus } from '../constants/enums.js'
 import Match from '../models/match_model.js'
@@ -15,7 +14,7 @@ import { strToMongoId } from '../utils/mongo_util.js'
 import { PLAYER_TYPES } from '../constants/index.js'
 import { ApiError } from '../utils/ApiError.js'
 export class MatchService {
-  static async createMatch(userId: Types.ObjectId, maxPlayersCount: number) {
+  static async createMatch(userId: string, maxPlayersCount: number) {
     const currRoom = await MatchService.getUserActiveMatch(userId.toString())
     if (currRoom) {
       throw new ApiError(`Already in a match - ${currRoom.roomId}`)
@@ -33,7 +32,7 @@ export class MatchService {
     return match
   }
 
-  static async joinMatch(userId: Types.ObjectId, roomId: string) {
+  static async joinMatch(userId: string, roomId: string) {
     if (!roomId) {
       throw new ApiError('RoomId is required')
     }
@@ -146,6 +145,10 @@ export class MatchService {
       : { ...match }
 
     await redisClient.hset(`room:${roomId}`, updatedMatch)
+  }
+
+  static async getUserMatchHistory(userId: string) {
+    return await Match.findPreviousMatchesByUser(userId)
   }
 }
 

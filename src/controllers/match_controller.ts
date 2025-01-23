@@ -12,7 +12,10 @@ export const createMatch = asyncHandler(async (req, _) => {
   // const username = req.user!.username ?? ''
   const userId = req.user!._id
 
-  const match = await MatchService.createMatch(userId, maxPlayersCount)
+  const match = await MatchService.createMatch(
+    userId.toString(),
+    maxPlayersCount
+  )
   return new ApiResponse('Match created successfully', match, 201)
   // const roomId = generateUID()
 
@@ -73,8 +76,8 @@ export const joinMatch = asyncHandler(async (req, _) => {
   }
   const userId = req.user!._id
 
-  const match = await MatchService.joinMatch(userId, roomId)
-  return new ApiResponse('Match joined successfully', match, 200)
+  const match = await MatchService.joinMatch(userId.toString(), roomId)
+  return new ApiResponse('Match joined successfully', match)
 
   // const currRoom = await RoomService.getUserRoom(username)
   // if (currRoom) {
@@ -151,4 +154,18 @@ export const deleteMatch = asyncHandler(async (req, _) => {
   await RoomService.deleteRoom(currRoom)
 
   return new ApiResponse('Match deleted successfully', { roomId }, 201)
+})
+
+export const userOngoingMatch = asyncHandler(async (req, _) => {
+  const userId = req.user!._id
+
+  const match = await MatchService.getUserActiveMatch(userId.toString())
+  return new ApiResponse('Fetched successfully', match)
+})
+
+export const userMatchHistory = asyncHandler(async (req, _) => {
+  const userId = req.user!._id
+
+  const match = await MatchService.getUserMatchHistory(userId.toString())
+  return new ApiResponse('Fetched successfully', match)
 })

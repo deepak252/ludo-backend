@@ -31,10 +31,8 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   // createMatch: (data: CreateMatchDto) => void
-  createMatch: (data: { maxPlayersCount: number }, callback?: any) => void
-  joinMatch: (data: { roomId: string }, callback?: any) => void
-  leaveMatch: (data: { roomId: string }, callback?: any) => void
-  rollDice: (data: { roomId: string }, callback?: any) => void
+  joinMatch: (data: { roomId: string }) => void
+  leaveMatch: (data: { roomId: string }) => void
   // sendMessage: (data: SendMessageDto) => void
   // updateGameState: (state: GameState) => void
 }

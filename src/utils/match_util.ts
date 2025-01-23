@@ -8,7 +8,6 @@ import {
   TokenMove
 } from '../types/match.types'
 import _ from 'lodash'
-import { Types } from 'mongoose'
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms))
@@ -19,7 +18,7 @@ export const createNewMatch = ({
   maxPlayersCount
 }: {
   roomId: string
-  userId: Types.ObjectId
+  userId: string
   maxPlayersCount: number
 }): MatchDocument => {
   const match: MatchDocument = {
