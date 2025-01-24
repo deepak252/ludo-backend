@@ -35,6 +35,11 @@ export const setupSocket = (httpServer: any) => {
     // handleRoom(socket)
     // handleMatch(io, socket)
 
+    socket.on('ping', () => {
+      console.log('ping: ', socket.id)
+      socket.emit('pong', 'Heartbeat')
+    })
+
     socket.on('createMatch', async ({ maxPlayersCount }, callback) => {
       try {
         if (!userId) {

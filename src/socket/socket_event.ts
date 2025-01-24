@@ -27,6 +27,7 @@ export interface ServerToClientEvents {
   // chatMessage: (message: ChatMessage) => void
   // gameState: (state: GameState) => void
   error: (message: string) => void
+  pong: (message: string) => void
 }
 
 export interface ClientToServerEvents {
@@ -35,6 +36,7 @@ export interface ClientToServerEvents {
   joinMatch: (data: { roomId: string }, callback?: any) => void
   leaveMatch: (data: { roomId: string }, callback?: any) => void
   rollDice: (data: { roomId: string }, callback?: any) => void
+  ping: () => void
   // sendMessage: (data: SendMessageDto) => void
   // updateGameState: (state: GameState) => void
 }
