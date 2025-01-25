@@ -22,6 +22,7 @@ export interface ServerToClientEvents {
   matchCreated: (matchData: MatchDocument) => void
   matchStarted: (matchData: MatchDocument) => void
   matchEnded: (matchData: MatchDocument) => void
+  ongoingMatch: (matchData: MatchDocument) => void
   // playerJoined: (playerData: Player) => void
   // playerLeft: (playerData: Player) => void
   // chatMessage: (message: ChatMessage) => void
@@ -31,10 +32,10 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  // createMatch: (data: CreateMatchDto) => void
   createMatch: (data: { maxPlayersCount: number }, callback?: any) => void
   joinMatch: (data: { roomId: string }, callback?: any) => void
   leaveMatch: (data: { roomId: string }, callback?: any) => void
+  ongoingMatch: () => void
   rollDice: (data: { roomId: string }, callback?: any) => void
   ping: () => void
   // sendMessage: (data: SendMessageDto) => void

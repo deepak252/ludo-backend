@@ -18,7 +18,9 @@ export const setupSocket = (httpServer: any) => {
       cors: {
         origin: process.env.CORS_ORIGIN || '*',
         credentials: true
-      }
+      },
+      pingInterval: 300000,
+      pingTimeout: 300000
     }
   )
   io.adapter(createAdapter(pubClient, subClient))
@@ -75,6 +77,15 @@ export const setupSocket = (httpServer: any) => {
         console.error('Error: JoinRoom', e)
         return callback?.(new ResponseFailure(e.message))
       }
+    })
+
+    socket.on('ongoingMatch', async () => {
+      console.log('ongoingMatch: ', socket.id)
+      if (!userId) return
+      const match = await MatchService.getUserActiveMatch(userId)
+      if (!match) return
+      socket.emit('ongoingMatch', match)
+      // return new ApiResponse('Fetched successfully', match)
     })
 
     socket.on('disconnect', async () => {

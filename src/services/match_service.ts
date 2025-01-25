@@ -122,7 +122,7 @@ export class MatchService {
     if (!cachedMatch.roomId) {
       const match = await Match.findByRoomId(roomId)
       if (match) {
-        this.updateMatch(roomId, match)
+        this.updateMatch(roomId, match.toJSON())
       }
       return match
     }
