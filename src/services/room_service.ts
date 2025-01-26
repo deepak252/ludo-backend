@@ -1,6 +1,6 @@
 import { redisClient } from '../config/redis.js'
 import { PLAYER_TYPES } from '../constants/index.js'
-import { LudoState, MatchStatus } from '../constants/enums.js'
+import { BoardState, MatchStatus } from '../constants/enums.js'
 import { PlayerColor } from '../types/match.types.js'
 
 export class RoomService {
@@ -37,7 +37,7 @@ export class RoomService {
       players: JSON.parse(res.players),
       turn: res.turn as PlayerColor,
       diceValue: Number(res.diceValue), // Parse JSON string
-      ludoState: res.ludoState ? (res.ludoState as LudoState) : undefined
+      boardState: res.boardState ? (res.boardState as BoardState) : undefined
     }
   }
 
@@ -155,7 +155,7 @@ export class RoomService {
 //       players: JSON.parse(res.players),
 //       turn: res.turn as PlayerColor,
 //       diceValue: Number(res.diceValue), // Parse JSON string
-//       ludoState: res.ludoState ? (res.ludoState as LudoState) : undefined
+//       boardState: res.boardState ? (res.boardState as BoardState) : undefined
 //     }
 //   }
 

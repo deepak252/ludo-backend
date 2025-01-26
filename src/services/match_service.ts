@@ -1,5 +1,5 @@
 import { redisClient } from '../config/redis.js'
-import { LudoState, MatchStatus } from '../constants/enums.js'
+import { BoardState, MatchStatus } from '../constants/enums.js'
 import Match from '../models/match_model.js'
 // import { MatchState } from '../types/match.types.js'
 import {
@@ -10,7 +10,11 @@ import {
 import { generateUID } from '../utils/uuid_util.js'
 import { MatchDocument, PlayerColor } from '../types/match.types.js'
 import { UserService } from './user_service.js'
-import { strToMongoId } from '../utils/mongo_util.js'
+import {
+  flatMapObject,
+  flatMongoDocument,
+  strToMongoId
+} from '../utils/mongo_util.js'
 import { PLAYER_TYPES } from '../constants/index.js'
 import { ApiError } from '../utils/ApiError.js'
 export class MatchService {
@@ -27,7 +31,7 @@ export class MatchService {
       throw new ApiError(error.message)
     }
     match = await match.save()
-    await redisClient.hset(`room:${roomId}`, match)
+    await redisClient.hset(`room:${roomId}`, flatMongoDocument(match))
     await UserService.setUserRoomId(userId.toString(), match.roomId)
     return match
   }
@@ -48,6 +52,7 @@ export class MatchService {
       if (ongoingMatch?.roomId !== roomId) {
         throw new ApiError(`Already in a match: ${ongoingMatch.roomId}`)
       }
+      // Already in this match
       return ongoingMatch
     }
 
@@ -75,16 +80,16 @@ export class MatchService {
     return match
   }
 
-  static async rollDice(roomId: string) {
+  static async rollDice() {
     const num = getRandomDiceNumber()
-    await redisClient.hset(`room:${roomId}`, {
-      diceValue: num,
-      ludoState: LudoState.DiceRolling
-    })
+    // await redisClient.hset(`room:${roomId}`, {
+    //   diceValue: num,
+    //   boardState: BoardState.DiceRolling
+    // })
 
     // const pipeline = redisClient.pipeline()
     // pipeline.hset(`room:${roomId}`, 'diceValue', num)
-    // pipeline.hset(`room:${roomId}`, 'ludoState', LudoState.DiceRolling)
+    // pipeline.hset(`room:${roomId}`, 'boardState', BoardState.DiceRolling)
     // await pipeline.exec()
     await delay(1000)
     return num
@@ -130,9 +135,9 @@ export class MatchService {
       roomId: cachedMatch.roomId,
       maxPlayersCount: Number(cachedMatch.maxPlayersCount),
       joinedPlayersCount: Number(cachedMatch.joinedPlayersCount),
-      createdBy: strToMongoId(cachedMatch.createdBy),
+      createdBy: strToMongoId(cachedMatch.createdBy) || '',
       status: cachedMatch.status as MatchStatus,
-      ludoState: cachedMatch.ludoState as LudoState,
+      boardState: cachedMatch.boardState as BoardState,
       players: JSON.parse(cachedMatch.players),
       turn: cachedMatch.turn as PlayerColor,
       diceValue: Number(cachedMatch.diceValue)
@@ -140,12 +145,18 @@ export class MatchService {
   }
 
   static async updateMatch(roomId: string, match: Partial<MatchDocument>) {
-    const updatedMatch = match.players
-      ? { ...match, players: JSON.stringify(match.players) }
-      : { ...match }
+    // const updatedMatch = match.players
+    //   ? { ...match, players: JSON.stringify(match.players) }
+    //   : { ...match }
 
-    await redisClient.hset(`room:${roomId}`, updatedMatch)
+    await redisClient.hset(`room:${roomId}`, flatMapObject(match))
   }
+
+  // static async setBoardState(roomId: string, boardState: BoardState) {
+  //   await redisClient.hset(`room:${roomId}`, {
+  //     boardState
+  //   })
+  // }
 
   static async getUserMatchHistory(userId: string) {
     return await Match.findPreviousMatchesByUser(userId)
@@ -157,12 +168,12 @@ export class MatchService {
 //     const num = getRandomDiceNumber()
 //     await redisClient.hset(`room:${roomId}`, {
 //       diceValue: num,
-//       ludoState: LudoState.DiceRolling
+//       boardState: BoardState.DiceRolling
 //     })
 
 //     // const pipeline = redisClient.pipeline()
 //     // pipeline.hset(`room:${roomId}`, 'diceValue', num)
-//     // pipeline.hset(`room:${roomId}`, 'ludoState', LudoState.DiceRolling)
+//     // pipeline.hset(`room:${roomId}`, 'boardState', BoardState.DiceRolling)
 //     // await pipeline.exec()
 //     await delay(1000)
 //     return num

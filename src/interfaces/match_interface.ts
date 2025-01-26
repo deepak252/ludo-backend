@@ -1,5 +1,5 @@
 // import { Types, Model, HydratedDocument, Document } from 'mongoose'
-// import { LudoState, MatchStatus } from '../constants/enums'
+// import { BoardState, MatchStatus } from '../constants/enums'
 // import { PlayerColor } from '../types/match.types'
 
 // export interface TokenInfo {
@@ -22,7 +22,7 @@
 //   maxPlayersCount: number
 //   joinedPlayersCount: number
 //   status: MatchStatus
-//   ludoState: LudoState
+//   boardState: BoardState
 //   players: Record<PlayerColor, Player>
 //   turn: PlayerColor
 //   diceValue: number

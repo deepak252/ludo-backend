@@ -4,7 +4,7 @@ import { MATCH_EVENT } from './socket_event.js'
 import { ResponseFailure, ResponseSuccess } from '../utils/ApiResponse.js'
 import { RoomService } from '../services/room_service.js'
 import { MatchService } from '../services/match_service.js'
-import { LudoState, MatchStatus } from '../constants/enums.js'
+import { BoardState, MatchStatus } from '../constants/enums.js'
 import {
   checkTokenKill,
   delay,
@@ -48,7 +48,7 @@ export const handleMatch = (io: Server, socket: Socket) => {
     try {
       const match = await checkMatchJoined(roomId)
       checkPlayerTurn(match)
-      if (match.ludoState !== LudoState.RollDice) {
+      if (match.boardState !== BoardState.RollDice) {
         throw new Error('Invalid move')
       }
 
@@ -66,7 +66,7 @@ export const handleMatch = (io: Server, socket: Socket) => {
           diceValue === 6 ? match.turn : getNextPlayerTurn(match)
         const data = {
           diceValue,
-          ludoState: LudoState.RollDice,
+          boardState: BoardState.RollDice,
           turn: nextPlayerTurn
         }
         await MatchService.updateMatch(roomId, data)
@@ -78,13 +78,13 @@ export const handleMatch = (io: Server, socket: Socket) => {
           match.players[match.turn].tokens[tokenIndex].pathIndex = nextIndex
           await MatchService.updateMatch(roomId, {
             diceValue,
-            ludoState: LudoState.TokenMoving,
+            boardState: BoardState.TokenMoving,
             players: match.players
           })
 
           io.to(roomId).emit(MATCH_EVENT.MOVE_TOKEN, {
             match,
-            ludoState: LudoState.TokenMoving,
+            boardState: BoardState.TokenMoving,
             tokenIndex,
             pathIndex: nextIndex,
             delayInterval
@@ -99,7 +99,7 @@ export const handleMatch = (io: Server, socket: Socket) => {
             })
             await MatchService.updateMatch(roomId, {
               diceValue,
-              ludoState: LudoState.RollDice,
+              boardState: BoardState.RollDice,
               players: match.players
             })
             io.to(roomId).emit(MATCH_EVENT.KILL_TOKEN, {
@@ -109,12 +109,12 @@ export const handleMatch = (io: Server, socket: Socket) => {
           }
           io.to(roomId).emit(MATCH_EVENT.ROLL_DICE, {
             diceValue,
-            ludoState: LudoState.RollDice
+            boardState: BoardState.RollDice
           })
         } else {
           await MatchService.updateMatch(roomId, {
             diceValue,
-            ludoState: LudoState.PickToken
+            boardState: BoardState.PickToken
           })
           io.to(roomId).emit(MATCH_EVENT.PICK_TOKEN, {
             match,
@@ -163,7 +163,7 @@ export const handleMatch = (io: Server, socket: Socket) => {
 //     try {
 //       const match = await checkMatchJoined(roomId)
 //       checkPlayerTurn(match)
-//       if (match.ludoState !== LudoState.RollDice) {
+//       if (match.boardState !== BoardState.RollDice) {
 //         throw new Error('Invalid move')
 //       }
 
@@ -181,7 +181,7 @@ export const handleMatch = (io: Server, socket: Socket) => {
 //           diceValue === 6 ? match.turn : getNextPlayerTurn(match)
 //         const data = {
 //           diceValue,
-//           ludoState: LudoState.RollDice,
+//           boardState: BoardState.RollDice,
 //           turn: nextPlayerTurn
 //         }
 //         await MatchService.updateMatch(roomId, data)
@@ -193,13 +193,13 @@ export const handleMatch = (io: Server, socket: Socket) => {
 //           match.players[match.turn].tokens[tokenIndex].pathIndex = nextIndex
 //           await MatchService.updateMatch(roomId, {
 //             diceValue,
-//             ludoState: LudoState.TokenMoving,
+//             boardState: BoardState.TokenMoving,
 //             players: match.players
 //           })
 
 //           io.to(roomId).emit(MATCH_EVENT.MOVE_TOKEN, {
 //             match,
-//             ludoState: LudoState.TokenMoving,
+//             boardState: BoardState.TokenMoving,
 //             tokenIndex,
 //             pathIndex: nextIndex,
 //             delayInterval
@@ -214,7 +214,7 @@ export const handleMatch = (io: Server, socket: Socket) => {
 //             })
 //             await MatchService.updateMatch(roomId, {
 //               diceValue,
-//               ludoState: LudoState.RollDice,
+//               boardState: BoardState.RollDice,
 //               players: match.players
 //             })
 //             io.to(roomId).emit(MATCH_EVENT.KILL_TOKEN, {
@@ -224,12 +224,12 @@ export const handleMatch = (io: Server, socket: Socket) => {
 //           }
 //           io.to(roomId).emit(MATCH_EVENT.ROLL_DICE, {
 //             diceValue,
-//             ludoState: LudoState.RollDice
+//             boardState: BoardState.RollDice
 //           })
 //         } else {
 //           await MatchService.updateMatch(roomId, {
 //             diceValue,
-//             ludoState: LudoState.PickToken
+//             boardState: BoardState.PickToken
 //           })
 //           io.to(roomId).emit(MATCH_EVENT.PICK_TOKEN, {
 //             match,

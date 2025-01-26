@@ -1,6 +1,6 @@
 import { DICE_VALUES, PLAYER_TYPES } from '../constants'
 import BoardConstants from '../constants/boardConstants'
-import { LudoState, MatchStatus } from '../constants/enums'
+import { BoardState, MatchStatus } from '../constants/enums'
 import {
   KilledToken,
   MatchDocument,
@@ -34,7 +34,7 @@ export const createNewMatch = ({
       red: { tokens: [], isPlaying: false }
     },
     status: MatchStatus.Waiting,
-    ludoState: LudoState.RollDice,
+    boardState: BoardState.RollDice,
     turn: 'green'
   }
   for (const player of PLAYER_TYPES) {
@@ -50,43 +50,43 @@ export const createNewMatch = ({
   return match
 }
 
-export const createRoom = ({
-  roomId,
-  username,
-  maxPlayersCount
-}: {
-  roomId: string
-  username: string
-  maxPlayersCount: number
-}) => {
-  const match: MatchState = {
-    roomId,
-    maxPlayersCount,
-    joinedPlayersCount: 1,
-    createdBy: username,
-    diceValue: 0,
-    players: {
-      green: { username, tokens: [], isPlaying: false },
-      yellow: { tokens: [], isPlaying: false },
-      blue: { tokens: [], isPlaying: false },
-      red: { tokens: [], isPlaying: false }
-    },
-    status: MatchStatus.Waiting,
-    turn: 'green',
-    ludoState: LudoState.RollDice
-  }
-  for (const player of PLAYER_TYPES) {
-    for (let i = 0; i < 4; i++) {
-      match.players[player].tokens.push({
-        id: `${player}_${i}`,
-        index: i,
-        color: player,
-        pathIndex: -1
-      })
-    }
-  }
-  return match
-}
+// export const createRoom = ({
+//   roomId,
+//   username,
+//   maxPlayersCount
+// }: {
+//   roomId: string
+//   username: string
+//   maxPlayersCount: number
+// }) => {
+//   const match: MatchState = {
+//     roomId,
+//     maxPlayersCount,
+//     joinedPlayersCount: 1,
+//     createdBy: username,
+//     diceValue: 0,
+//     players: {
+//       green: { username, tokens: [], isPlaying: false },
+//       yellow: { tokens: [], isPlaying: false },
+//       blue: { tokens: [], isPlaying: false },
+//       red: { tokens: [], isPlaying: false }
+//     },
+//     status: MatchStatus.Waiting,
+//     turn: 'green',
+//     boardState: BoardState.RollDice
+//   }
+//   for (const player of PLAYER_TYPES) {
+//     for (let i = 0; i < 4; i++) {
+//       match.players[player].tokens.push({
+//         id: `${player}_${i}`,
+//         index: i,
+//         color: player,
+//         pathIndex: -1
+//       })
+//     }
+//   }
+//   return match
+// }
 
 export const getRandomDiceNumber = () => {
   const di = Math.floor(Math.random() * DICE_VALUES.length)
@@ -98,7 +98,7 @@ export const getRandomDiceNumber = () => {
  * @param index - Token index
  */
 export const getTokenMove = (
-  state: MatchState,
+  state: MatchDocument,
   tokenIndex: number
 ): TokenMove | null => {
   const currPlayer = state.turn
@@ -119,13 +119,11 @@ export const getTokenMove = (
     }
   }
   const delayInterval = BoardConstants.ANIMATION_DELAY * (nextIndex - currIndex)
-  return { currIndex, nextIndex, delayInterval }
+  return { tokenIndex, currIndex, nextIndex, delayInterval }
 }
 
-export const getMovableTokens = (state: MatchState) => {
-  const movableTokens: (TokenMove & {
-    tokenIndex: number
-  })[] = []
+export const getMovableTokens = (state: MatchDocument) => {
+  const movableTokens: TokenMove[] = []
 
   for (let i = 0; i < 4; i++) {
     const move = getTokenMove(state, i)
@@ -136,7 +134,7 @@ export const getMovableTokens = (state: MatchState) => {
   return movableTokens
 }
 
-export const getTokenAutoMove = (state: MatchState) => {
+export const getTokenAutoMove = (state: MatchDocument) => {
   const movableTokens = getMovableTokens(state)
   if (!movableTokens.length) {
     return null
@@ -151,7 +149,7 @@ export const getTokenAutoMove = (state: MatchState) => {
   return tokenAutoMove
 }
 
-export const getNextPlayerTurn = (match: MatchState) => {
+export const getNextPlayerTurn = (match: MatchDocument) => {
   const currPlayer = match.turn
   let nextPlayer = currPlayer
   for (let i = 0; i < 8; i++) {
@@ -172,7 +170,7 @@ export const getNextPlayerTurn = (match: MatchState) => {
 }
 
 export const checkTokenKill = (
-  match: MatchState,
+  match: MatchDocument,
   pathIndex: number
 ): KilledToken[] => {
   const currPlayer = match.turn

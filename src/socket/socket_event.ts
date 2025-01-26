@@ -1,4 +1,5 @@
-import { MatchDocument } from '../types/match.types'
+import { BoardState } from '../constants/enums'
+import { KilledToken, MatchDocument, TokenMove } from '../types/match.types'
 
 export const ROOM_EVENT = {
   JOIN_RANDOM: 'joinRandom',
@@ -29,6 +30,14 @@ export interface ServerToClientEvents {
   // gameState: (state: GameState) => void
   error: (message: string) => void
   pong: (message: string) => void
+
+  matchStateChange: (data: Partial<MatchDocument>) => void
+  pickToken: (data: { movableTokens: TokenMove[] }) => void
+  tokenMoved: (data: { boardState: BoardState; move: TokenMove }) => void
+  tokenKilled: (data: {
+    // match: MatchDocument
+    killedTokens: KilledToken[]
+  }) => void
 }
 
 export interface ClientToServerEvents {

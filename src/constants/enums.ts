@@ -5,7 +5,7 @@ export enum MatchStatus {
   Cancelled = 'Cancelled'
 }
 
-export enum LudoState {
+export enum BoardState {
   RollDice = 'RollDice',
   DiceRolling = 'DiceRolling',
   PickToken = 'PickToken',

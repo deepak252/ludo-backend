@@ -1,10 +1,11 @@
 import { Types } from 'mongoose'
-import { LudoState, MatchStatus } from '../constants/enums.js'
+import { BoardState, MatchStatus } from '../constants/enums.js'
 
 export type Position = [number, number]
 export type PlayerColor = 'green' | 'yellow' | 'blue' | 'red'
 
 export type TokenMove = {
+  tokenIndex: number
   currIndex: number
   nextIndex: number
   delayInterval: number
@@ -39,12 +40,12 @@ export type MatchDocument = {
   turn: PlayerColor
   diceValue: number
   createdBy: Types.ObjectId | string
-  ludoState: LudoState
+  boardState: BoardState
   createdAt?: Date
   updatedAt?: Date
 }
 
-// import { LudoState, MatchStatus } from '../constants/enums.js'
+// import { BoardState, MatchStatus } from '../constants/enums.js'
 
 // export type Position = [number, number]
 // export type PlayerColor = 'green' | 'yellow' | 'blue' | 'red'
@@ -83,5 +84,5 @@ export type MatchDocument = {
 //   turn: PlayerColor
 //   diceValue: number
 //   createdBy: string
-//   ludoState?: LudoState
+//   boardState?: BoardState
 // }

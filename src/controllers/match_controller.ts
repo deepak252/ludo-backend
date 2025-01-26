@@ -44,7 +44,7 @@ export const createMatch = asyncHandler(async (req, _) => {
   //   },
   //   status: MatchStatus.NotStarted,
   //   turn: 'green',
-  //   ludoState: LudoState.throwDice
+  //   boardState: BoardState.throwDice
   // })
 
   // id: string
@@ -113,7 +113,7 @@ export const joinMatch = asyncHandler(async (req, _) => {
   //   },
   //   status: MatchStatus.NotStarted,
   //   turn: 'green',
-  //   ludoState: LudoState.throwDice
+  //   boardState: BoardState.throwDice
   // })
 
   // id: string

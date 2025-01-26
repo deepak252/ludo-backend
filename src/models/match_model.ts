@@ -1,5 +1,5 @@
 import { HydratedDocument, Model, Schema, model } from 'mongoose'
-import { LudoState, MatchStatus } from '../constants/enums'
+import { BoardState, MatchStatus } from '../constants/enums'
 import { PLAYER_TYPES } from '../constants'
 import { MatchDocument } from '../types/match.types'
 
@@ -76,11 +76,11 @@ const matchSchema = new Schema<MatchDocument, MatchModel, object>(
       required: true,
       default: MatchStatus.Waiting
     },
-    ludoState: {
+    boardState: {
       type: String,
-      enum: Object.values(LudoState),
+      enum: Object.values(BoardState),
       required: true,
-      default: LudoState.RollDice
+      default: BoardState.RollDice
     },
     players: {
       type: {
