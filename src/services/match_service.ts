@@ -145,18 +145,8 @@ export class MatchService {
   }
 
   static async updateMatch(roomId: string, match: Partial<MatchDocument>) {
-    // const updatedMatch = match.players
-    //   ? { ...match, players: JSON.stringify(match.players) }
-    //   : { ...match }
-
     await redisClient.hset(`room:${roomId}`, flatMapObject(match))
   }
-
-  // static async setBoardState(roomId: string, boardState: BoardState) {
-  //   await redisClient.hset(`room:${roomId}`, {
-  //     boardState
-  //   })
-  // }
 
   static async getUserMatchHistory(userId: string) {
     return await Match.findPreviousMatchesByUser(userId)

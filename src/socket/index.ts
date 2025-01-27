@@ -10,7 +10,7 @@ import { requireSocketAuth } from '../middlewares/auth_middleware.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socket_event.js'
 import { MatchService } from '../services/match_service.js'
 import { ResponseFailure, ResponseSuccess } from '../utils/ApiResponse.js'
-import { MatchDocument } from '../types/match.types.js'
+import { KilledToken, MatchDocument } from '../types/match.types.js'
 import { BoardState } from '../constants/enums.js'
 import {
   checkTokenKill,
@@ -18,7 +18,9 @@ import {
   getMovableTokens,
   getNextPlayerTurn,
   getRandomDiceNumber,
-  getTokenAutoMove
+  getTokenAutoMove,
+  getTokenMove,
+  setTokenHighlight
 } from '../utils/match_util.js'
 import BoardConstants from '../constants/boardConstants.js'
 
@@ -153,11 +155,15 @@ export const setupSocket = (httpServer: any) => {
         match.boardState = BoardState.TokenMoving
 
         const movableTokens = getMovableTokens(match)
+        let killedTokens: KilledToken[] = []
+        let nextIndex = -1
         if (movableTokens.length) {
           const tokenAutoMove = getTokenAutoMove(match)
           if (tokenAutoMove) {
-            const { nextIndex, tokenIndex, delayInterval } = tokenAutoMove
+            const { tokenIndex, delayInterval } = tokenAutoMove
+            nextIndex = tokenAutoMove.nextIndex
             match.players[match.turn].tokens[tokenIndex].pathIndex = nextIndex
+            // match.players[match.turn].tokens[tokenIndex].highlight = false
             match.boardState = BoardState.TokenMoving
             await MatchService.updateMatch(roomId, {
               boardState: BoardState.TokenMoving,
@@ -170,7 +176,7 @@ export const setupSocket = (httpServer: any) => {
             })
             await delay(delayInterval)
 
-            const killedTokens = checkTokenKill(match, nextIndex)
+            killedTokens = checkTokenKill(match, nextIndex)
             if (killedTokens.length) {
               killedTokens.forEach((killedToken) => {
                 const { token, player } = killedToken
@@ -184,23 +190,120 @@ export const setupSocket = (httpServer: any) => {
               })
             }
           } else {
-            await MatchService.updateMatch(roomId, {
-              boardState: BoardState.PickToken
+            setTokenHighlight(
+              match,
+              true,
+              movableTokens.map((e) => e.tokenIndex)
+            )
+            await handleMatchStateChange(roomId, {
+              boardState: BoardState.PickToken,
+              players: match.players
             })
-            io.to(roomId).emit('pickToken', {
-              movableTokens
-            })
+            // await MatchService.updateMatch(roomId, {
+            //   boardState: BoardState.PickToken,
+            //   players: match.players
+            // })
+            // io.to(roomId).emit('pickToken', {
+            //   // movableTokens
+            //   boardState: BoardState.PickToken,
+            //   players: match.players
+            // })
             return
           }
         }
         const nextPlayerTurn =
-          diceValue === 6 ? match.turn : getNextPlayerTurn(match)
+          match.diceValue === 6 || nextIndex === 56 || killedTokens.length
+            ? match.turn
+            : getNextPlayerTurn(match)
         await handleMatchStateChange(roomId, {
           boardState: BoardState.RollDice,
           turn: nextPlayerTurn
         })
       } catch (e: any) {
         console.error('Error: rollDice', e)
+        return callback?.(new ResponseFailure(e.message))
+      }
+    })
+
+    socket.on('pickToken', async ({ roomId, tokenIndex }, callback) => {
+      try {
+        const match = await checkMatchJoined(roomId)
+        checkPlayerTurn(match)
+        if (match.boardState !== BoardState.PickToken) {
+          throw new Error('Invalid move')
+        }
+        const move = getTokenMove(match, tokenIndex)
+        if (!move) {
+          throw new Error('Invalid token move')
+        }
+        const { nextIndex, delayInterval } = move
+        match.players[match.turn].tokens[tokenIndex].pathIndex = nextIndex
+        match.boardState = BoardState.TokenMoving
+        setTokenHighlight(match, false)
+        // await MatchService.updateMatch(roomId, {
+        //   boardState: BoardState.TokenMoving,
+        //   players: match.players
+        // })
+        await handleMatchStateChange(roomId, {
+          players: match.players
+        })
+        io.to(roomId).emit('tokenMoved', {
+          boardState: BoardState.TokenMoving,
+          move: move
+        })
+        await delay(delayInterval)
+
+        const killedTokens = checkTokenKill(match, nextIndex)
+        if (killedTokens.length) {
+          killedTokens.forEach((killedToken) => {
+            const { token, player } = killedToken
+            match.players[player].tokens[token.index].pathIndex = -1
+          })
+          await MatchService.updateMatch(roomId, {
+            players: match.players
+          })
+          io.to(roomId).emit('tokenKilled', {
+            killedTokens
+          })
+        }
+
+        const nextPlayerTurn =
+          match.diceValue === 6 || nextIndex === 56 || killedTokens.length
+            ? match.turn
+            : getNextPlayerTurn(match)
+        await handleMatchStateChange(roomId, {
+          boardState: BoardState.RollDice,
+          turn: nextPlayerTurn
+        })
+        // if (!move) {
+        //   yield put(pickTokenFailure({ message: 'Invalid Token move' }))
+        //   return
+        // }
+        // yield put(
+        //   setHighlightTokens({
+        //     highlight: false
+        //   })
+        // )
+
+        // const { currIndex, nextIndex } = move
+        // yield moveTokenWorker({ currIndex, nextIndex, tokenIndex })
+
+        // //Check if other token killed
+        // const killedTokens = checkTokenKill(state, nextIndex)
+        // if (killedTokens.length) {
+        //   yield put(killTokens({ killedTokens }))
+        //   yield delay(BoardConstants.ANIMATION_DELAY)
+        // }
+        // yield put(
+        //   pickTokenSuccess({
+        //     isNextPlayerTurn:
+        //       matchState.dice.value !== 6 &&
+        //       !killedTokens.length &&
+        //       nextIndex !== 56
+        //   })
+        // )
+      } catch (e: any) {
+        console.error('Error: pickToken', e)
         return callback?.(new ResponseFailure(e.message))
       }
     })

@@ -33,6 +33,10 @@ const tokenInfoSchema = new Schema(
   { _id: false }
 )
 
+/**
+ * @param userId - means users has joined the match
+ * @param isPlaying - if true, means user has not left the match
+ */
 const playerSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', default: null },

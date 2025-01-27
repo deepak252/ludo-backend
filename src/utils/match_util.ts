@@ -28,7 +28,7 @@ export const createNewMatch = ({
     createdBy: userId,
     diceValue: 0,
     players: {
-      green: { userId: userId, tokens: [], isPlaying: false },
+      green: { userId: userId, tokens: [], isPlaying: true },
       yellow: { tokens: [], isPlaying: false },
       blue: { tokens: [], isPlaying: false },
       red: { tokens: [], isPlaying: false }
@@ -202,6 +202,25 @@ export const checkTokenKill = (
     }
   })
   return killedTokens
+}
+
+export const setTokenHighlight = (
+  match: MatchDocument,
+  highlight: boolean,
+  tokenIndexes?: number[]
+) => {
+  const currPlayer = match.turn
+  if (highlight) {
+    if (tokenIndexes?.length) {
+      for (const i of tokenIndexes) {
+        match.players[currPlayer].tokens[i].highlight = highlight
+      }
+    }
+  } else {
+    for (let i = 0; i < 4; i++) {
+      match.players[currPlayer].tokens[i].highlight = false
+    }
+  }
 }
 // /**
 //  * Check if token is present at selected position, return token index

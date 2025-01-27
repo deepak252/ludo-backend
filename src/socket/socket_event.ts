@@ -32,7 +32,8 @@ export interface ServerToClientEvents {
   pong: (message: string) => void
 
   matchStateChange: (data: Partial<MatchDocument>) => void
-  pickToken: (data: { movableTokens: TokenMove[] }) => void
+  // pickToken: (data: { movableTokens: TokenMove[] }) => void
+  // pickToken: (data: { players: Record<PlayerColor, Player> }) => void
   tokenMoved: (data: { boardState: BoardState; move: TokenMove }) => void
   tokenKilled: (data: {
     // match: MatchDocument
@@ -46,6 +47,10 @@ export interface ClientToServerEvents {
   leaveMatch: (data: { roomId: string }, callback?: any) => void
   ongoingMatch: () => void
   rollDice: (data: { roomId: string }, callback?: any) => void
+  pickToken: (
+    data: { roomId: string; tokenIndex: number },
+    callback?: any
+  ) => void
   ping: () => void
   // sendMessage: (data: SendMessageDto) => void
   // updateGameState: (state: GameState) => void
