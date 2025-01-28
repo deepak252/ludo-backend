@@ -6,8 +6,8 @@ export type PlayerColor = 'green' | 'yellow' | 'blue' | 'red'
 
 export type TokenMove = {
   tokenIndex: number
-  currIndex: number
-  nextIndex: number
+  currIndex: number // curr path index
+  nextIndex: number // next path index
   delayInterval: number
 }
 
@@ -20,7 +20,8 @@ export type TokenInfo = {
 }
 
 export type KilledToken = {
-  token: TokenInfo
+  // token: TokenInfo
+  move: TokenMove
   player: PlayerColor
 }
 

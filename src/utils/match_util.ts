@@ -195,7 +195,12 @@ export const checkTokenKill = (
         )
       ) {
         killedTokens.push({
-          token: tokens[i],
+          move: {
+            tokenIndex: tokens[i].index,
+            currIndex: tokens[i].pathIndex,
+            nextIndex: -1,
+            delayInterval: (tokens[i].pathIndex + 1) * 50
+          },
           player: key as PlayerColor
         })
       }

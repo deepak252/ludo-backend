@@ -179,8 +179,8 @@ export const setupSocket = (httpServer: any) => {
             killedTokens = checkTokenKill(match, nextIndex)
             if (killedTokens.length) {
               killedTokens.forEach((killedToken) => {
-                const { token, player } = killedToken
-                match.players[player].tokens[token.index].pathIndex = -1
+                const { move, player } = killedToken
+                match.players[player].tokens[move.tokenIndex].pathIndex = -1
               })
               await MatchService.updateMatch(roomId, {
                 players: match.players
@@ -188,6 +188,7 @@ export const setupSocket = (httpServer: any) => {
               io.to(roomId).emit('tokenKilled', {
                 killedTokens
               })
+              await delay(killedTokens[0].move.delayInterval)
             }
           } else {
             setTokenHighlight(
@@ -244,7 +245,10 @@ export const setupSocket = (httpServer: any) => {
         //   boardState: BoardState.TokenMoving,
         //   players: match.players
         // })
-        await handleMatchStateChange(roomId, {
+        // await handleMatchStateChange(roomId, {
+        //   players: match.players
+        // })
+        await MatchService.updateMatch(roomId, {
           players: match.players
         })
         io.to(roomId).emit('tokenMoved', {
@@ -256,8 +260,8 @@ export const setupSocket = (httpServer: any) => {
         const killedTokens = checkTokenKill(match, nextIndex)
         if (killedTokens.length) {
           killedTokens.forEach((killedToken) => {
-            const { token, player } = killedToken
-            match.players[player].tokens[token.index].pathIndex = -1
+            const { move, player } = killedToken
+            match.players[player].tokens[move.tokenIndex].pathIndex = -1
           })
           await MatchService.updateMatch(roomId, {
             players: match.players
@@ -265,6 +269,7 @@ export const setupSocket = (httpServer: any) => {
           io.to(roomId).emit('tokenKilled', {
             killedTokens
           })
+          await delay(killedTokens[0].move.delayInterval)
         }
 
         const nextPlayerTurn =
