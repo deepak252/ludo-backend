@@ -1,4 +1,5 @@
 import { redisClient } from '../config/redis.js'
+import User from '../models/user_model.js'
 // import { User } from '../types/user.types.js'
 // import _ from 'lodash'
 
@@ -41,6 +42,12 @@ export class UserService {
 
   static async removeUserSocketId(userId?: string) {
     await redisClient.hdel(`user:${userId}`, 'socketId')
+  }
+
+  static async getLiveUsers() {
+    const users = await User.find()
+
+    return users
   }
 }
 

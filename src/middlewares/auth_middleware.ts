@@ -76,7 +76,9 @@ export const requireSocketAuth = async (
 
     // Verify the user using the access token
     socket.user = await verifyUser(accessToken)
-    await UserService.setUserSocketId(socket.user.username, socket.id)
+    if (socket.user._id) {
+      await UserService.setUserSocketId(socket.user._id.toString(), socket.id)
+    }
   } catch (e: any) {
     console.log(e)
     // next(new Error(e.message || 'Unauthorized access'))
