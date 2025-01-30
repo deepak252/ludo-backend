@@ -118,6 +118,7 @@ export const setupSocket = (httpServer: any) => {
         }
         const match = await MatchService.joinMatch(userId.toString(), roomId)
         await socket.join(roomId)
+        handleMatchStateChange(roomId, match)
         callback?.(new ResponseSuccess('Room joined successfully', match))
       } catch (e: any) {
         console.error('Error: JoinRoom', e)
