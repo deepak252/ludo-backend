@@ -1,7 +1,7 @@
 import { HydratedDocument, Model, Schema, model } from 'mongoose'
-import { BoardState, MatchStatus } from '../constants/enums'
-import { PLAYER_TYPES } from '../constants'
-import { MatchDocument } from '../types/match.types'
+import { BoardState, MatchStatus } from '../constants/enums.js'
+import { PLAYER_TYPES } from '../constants/index.js'
+import { MatchDocument } from '../types/match.types.js'
 
 interface MatchModel extends Model<MatchDocument, object, object> {
   findByRoomId(roomId: string): Promise<HydratedDocument<MatchDocument, object>>

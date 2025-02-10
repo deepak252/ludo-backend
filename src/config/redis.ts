@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis'
 import { RedisStore } from 'connect-redis'
-import { REDIS_PASSWORD, REDIS_PORT, REDIS_URI } from './environment'
+import { REDIS_PASSWORD, REDIS_PORT, REDIS_URI } from './environment.js'
 
 const redisClient = new Redis({
   host: REDIS_URI,

@@ -1,13 +1,13 @@
 import { Schema, model, HydratedDocument, Model } from 'mongoose'
 import bcryptjs from 'bcryptjs'
-import { REGEX, INVALID_USERNAMES } from '../constants'
+import { REGEX, INVALID_USERNAMES } from '../constants/index.js'
 import {
   comparePassword,
   generateAccessToken,
   generateRefreshToken
 } from '../utils/auth_util.js'
-import { ApiError } from '../utils/ApiError'
-import { UserDocument } from '../types/user.types'
+import { ApiError } from '../utils/ApiError.js'
+import { UserDocument } from '../types/user.types.js'
 
 interface IUserMethods {
   comparePassword(password: string): Promise<boolean>

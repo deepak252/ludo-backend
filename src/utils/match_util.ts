@@ -1,12 +1,12 @@
-import { DICE_VALUES, PLAYER_TYPES } from '../constants'
-import BoardConstants from '../constants/boardConstants'
-import { BoardState, MatchStatus } from '../constants/enums'
+import { DICE_VALUES, PLAYER_TYPES } from '../constants/index.js'
+import BoardConstants from '../constants/boardConstants.js'
+import { BoardState, MatchStatus } from '../constants/enums.js'
 import {
   KilledToken,
   MatchDocument,
   PlayerColor,
   TokenMove
-} from '../types/match.types'
+} from '../types/match.types.js'
 import _ from 'lodash'
 
 export const delay = (ms: number) =>

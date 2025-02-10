@@ -1,6 +1,6 @@
-import { BoardState } from '../constants/enums'
-import { KilledToken, MatchDocument, TokenMove } from '../types/match.types'
-import { UserDocument } from '../types/user.types'
+import { BoardState } from '../constants/enums.js'
+import { KilledToken, MatchDocument, TokenMove } from '../types/match.types.js'
+import { UserDocument } from '../types/user.types.js'
 
 export const ROOM_EVENT = {
   JOIN_RANDOM: 'joinRandom',
