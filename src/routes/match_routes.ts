@@ -1,6 +1,6 @@
 import {
   createMatch,
-  deleteMatch,
+  // deleteMatch,
   joinMatch,
   userMatchHistory,
   userOngoingMatch
@@ -11,7 +11,7 @@ const router = Router()
 
 router.post('/', requireAuth, createMatch)
 router.post('/join', requireAuth, joinMatch)
-router.delete('/', requireAuth, deleteMatch)
+// router.delete('/', requireAuth, deleteMatch)
 router.get('/ongoing', requireAuth, userOngoingMatch)
 router.get('/history', requireAuth, userMatchHistory)
 

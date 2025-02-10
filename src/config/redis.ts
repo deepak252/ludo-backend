@@ -1,14 +1,17 @@
 import { Redis } from 'ioredis'
 import { RedisStore } from 'connect-redis'
+import { REDIS_PASSWORD, REDIS_PORT, REDIS_URI } from './environment'
 
 const redisClient = new Redis({
-  host: 'redis', // Docker service name
-  port: 6379
+  host: REDIS_URI,
+  port: Number(REDIS_PORT),
+  password: REDIS_PASSWORD
 })
 
 const pubClient = new Redis({
-  host: 'redis', // Docker service name
-  port: 6379
+  host: REDIS_URI,
+  port: Number(REDIS_PORT),
+  password: REDIS_PASSWORD
 })
 const subClient = pubClient.duplicate()
 

@@ -1,5 +1,4 @@
 import { MatchService } from '../services/match_service.js'
-import { RoomService } from '../services/room_service.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { asyncHandler } from '../utils/async_handler.js'
@@ -138,23 +137,23 @@ export const joinMatch = asyncHandler(async (req, _) => {
   // return new ApiResponse('Match created successfully', { roomId }, 201)
 })
 
-export const deleteMatch = asyncHandler(async (req, _) => {
-  const { roomId } = req.body
-  if (!roomId) {
-    throw new ApiError('Field roomId is required')
-  }
-  const username = req.user?.username ?? ''
-  const currRoom = await RoomService.getRoom(roomId)
-  if (!currRoom) {
-    throw new ApiError('Match not found')
-  }
-  if (currRoom?.createdBy !== username) {
-    throw new ApiError("Can't delete match")
-  }
-  await RoomService.deleteRoom(currRoom)
+// export const deleteMatch = asyncHandler(async (req, _) => {
+//   const { roomId } = req.body
+//   if (!roomId) {
+//     throw new ApiError('Field roomId is required')
+//   }
+//   const username = req.user?.username ?? ''
+//   const currRoom = await RoomService.getRoom(roomId)
+//   if (!currRoom) {
+//     throw new ApiError('Match not found')
+//   }
+//   if (currRoom?.createdBy !== username) {
+//     throw new ApiError("Can't delete match")
+//   }
+//   await RoomService.deleteRoom(currRoom)
 
-  return new ApiResponse('Match deleted successfully', { roomId }, 201)
-})
+//   return new ApiResponse('Match deleted successfully', { roomId }, 201)
+// })
 
 export const userOngoingMatch = asyncHandler(async (req, _) => {
   const userId = req.user!._id
