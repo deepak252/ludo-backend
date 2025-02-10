@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, { SignOptions, JwtPayload } from 'jsonwebtoken'
 import bcryptjs from 'bcryptjs'
 import {
   ACCESS_TOKEN_SECRET,
@@ -7,57 +7,61 @@ import {
   REFRESH_TOKEN_EXPIRY
 } from '../config/environment.js'
 
-type JWTPayload = {
+interface CustomJWTPayload extends JwtPayload {
   _id: string
   username: string
   email: string
   fullName?: string
 }
-/**
- * @returns JWT Access token
- */
+
 export const generateAccessToken = ({
   _id,
   username,
   email,
   fullName
-}: JWTPayload) => {
-  return jwt.sign({ _id, username, email, fullName }, ACCESS_TOKEN_SECRET, {
-    expiresIn: ACCESS_TOKEN_EXPIRY
-  })
+}: CustomJWTPayload): string => {
+  return jwt.sign(
+    { _id, username, email, fullName },
+    ACCESS_TOKEN_SECRET as string,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRY
+    } as SignOptions
+  )
 }
 
-/**
- * @returns JWT Refresh token
- */
-export const generateRefreshToken = ({ _id }: { _id: string }) => {
-  return jwt.sign({ _id }, REFRESH_TOKEN_SECRET, {
-    expiresIn: REFRESH_TOKEN_EXPIRY
-  })
+export const generateRefreshToken = ({ _id }: { _id: string }): string => {
+  return jwt.sign(
+    { _id },
+    REFRESH_TOKEN_SECRET as string,
+    {
+      expiresIn: REFRESH_TOKEN_EXPIRY
+    } as SignOptions
+  )
 }
 
-/**
- * @param token - JWT Access token
- */
-export const verifyAccessToken = (token: string): JWTPayload | null => {
-  return jwt.verify(token, ACCESS_TOKEN_SECRET) as JWTPayload
+export const verifyAccessToken = (token: string): CustomJWTPayload | null => {
+  try {
+    return jwt.verify(token, ACCESS_TOKEN_SECRET as string) as CustomJWTPayload
+  } catch {
+    return null
+  }
 }
 
-/**
- * @param token - JWT Access token
- * @returns user
- */
-export const verifyRefreshToken = (token: string) => {
-  return jwt.verify(token, REFRESH_TOKEN_SECRET)
+export const verifyRefreshToken = (token: string): JwtPayload | null => {
+  try {
+    return jwt.verify(token, REFRESH_TOKEN_SECRET as string) as JwtPayload
+  } catch {
+    return null
+  }
 }
 
-export const getHashedPassword = async (password: string) => {
+export const getHashedPassword = async (password: string): Promise<string> => {
   return await bcryptjs.hash(password, 10)
 }
 
 export const comparePassword = async (
   candidatePassword: string,
   password: string
-) => {
+): Promise<boolean> => {
   return await bcryptjs.compare(candidatePassword, password)
 }
