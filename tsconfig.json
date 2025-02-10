@@ -11,6 +11,9 @@
     "rootDir": "src",
     "outDir": "dist",
 
+    "noEmit": false,
+    "noEmitOnError": false,
+
     "typeRoots": ["./node_modules/@types", "./src/types/types"]
   },
 
